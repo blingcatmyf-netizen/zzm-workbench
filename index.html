@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="至尊咪" />
+<meta name="theme-color" content="#0d3b5c" />
+<title>至尊咪 · 咪也要上班</title>
+<style>
+  :root{
+    --bg:#eaf3fb;--sidebar:#0d3b5c;--panel:#fff;--ink:#12293c;--muted:#5f7488;--line:#dce8f1;
+    --primary:#0d9488;--primary-soft:#e0f6f2;--teal:#0d9488;--teal-soft:#e0f6f2;
+    --blue-soft:#e3ebfd;--amber:#0e7490;--amber-soft:#dbf2f8;--rose:#e11d48;--rose-soft:#ffe7ed;
+    --radius:16px;--shadow:0 1px 3px rgba(13,59,92,.06),0 10px 26px rgba(13,59,92,.07);
+    --grad:linear-gradient(135deg,#0ea5a4,#2563eb);--gold:#0f766e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(900px 520px at 5% -8%,rgba(37,99,235,.15),transparent 62%),
+               radial-gradient(820px 520px at 102% -4%,rgba(13,148,136,.17),transparent 62%),
+               radial-gradient(700px 700px at 62% 112%,rgba(14,116,144,.11),transparent 60%)}
+  .app{display:grid;grid-template-columns:248px 1fr;min-height:100vh;position:relative;z-index:1}
+  .sidebar{background:linear-gradient(180deg,#0d3b5c 0%,#10514f 55%,#0d6b66 100%);color:#cde3ee;padding:18px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 16px}
+  .brand .logo{width:32px;height:32px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(13,148,136,.38)}
+  .brand .name{font-size:16px;font-weight:700;color:#fff;letter-spacing:.05em}
+  .brand .sub{font-size:11px;color:#9fd8d2}
+  .nav-group{font-size:11px;color:#7fb3c8;letter-spacing:.08em;padding:14px 10px 6px}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;cursor:pointer;color:#cde3ee;transition:.15s;font-size:13.5px}
+  .nav-item:hover{background:rgba(255,255,255,.10);color:#fff}
+  .nav-item.active{background:linear-gradient(135deg,rgba(14,165,164,.55),rgba(37,99,235,.6));color:#fff;font-weight:600;box-shadow:0 6px 16px rgba(6,120,120,.3)}
+  .nav-item svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;fill:none;stroke-width:1.9}
+  .nav-tag{margin-left:auto;font-size:10px;background:var(--rose);color:#fff;border-radius:20px;padding:1px 7px}
+  .nav-tag.hide{display:none}
+  .side-foot{margin-top:auto;font-size:10.5px;color:#7fa8b8;padding:12px 10px 0;line-height:1.6}
+
+  .main{display:flex;flex-direction:column;min-width:0}
+  .topbar{height:60px;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(220,232,241,.9);display:flex;align-items:center;gap:12px;padding:0 24px;position:sticky;top:0;z-index:5}
+  .topbar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--grad);opacity:.55}
+  .topbar h1{font-size:16px;font-weight:650}
+  .date-pill{font-size:12px;color:var(--muted);background:#eef3f8;border-radius:20px;padding:5px 12px}
+  .spacer{flex:1}
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
+  .content{padding:24px;overflow:auto}
+  .view{display:none}.view.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .grid{display:grid;gap:16px}
+  .g-4{grid-template-columns:repeat(4,1fr)}.g-3{grid-template-columns:repeat(3,1fr)}.g-2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:1100px){.g-4,.g-3{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:transform .18s ease,box-shadow .18s ease}
+  .card:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(13,59,92,.08),0 16px 34px rgba(13,59,92,.10)}
+  .card h3{font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:#123c4f}
+  .stat{display:flex;flex-direction:column;gap:4px}
+  .stat .num{font-size:26px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .lbl{font-size:12px;color:var(--muted)}
+  .stat .delta{font-size:11px;font-weight:600}
+  .up{color:var(--teal)}.down{color:var(--rose)}.amber{color:var(--amber)}
+  .section-title{font-size:15px;font-weight:650;margin:22px 0 12px;display:flex;align-items:center;gap:8px;color:#123c4f}
+  .section-title::before{content:"";width:4px;height:15px;border-radius:3px;background:var(--grad)}
+  .section-title small{font-weight:400;color:var(--muted);font-size:12px}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 9px;border-radius:20px;font-weight:600}
+  .p-teal{background:var(--teal-soft);color:#0b6e6a}.p-blue{background:var(--blue-soft);color:#1e40af}
+  .p-amber{background:var(--amber-soft);color:#0e7490}.p-rose{background:var(--rose-soft);color:#be123c}
+  .p-gray{background:#eef3f8;color:#5f7488}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.03em}
+  tbody tr:hover{background:#f4fafd}
+  .row-title{font-weight:600}.row-sub{font-size:11.5px;color:var(--muted)}
+  .muted{color:var(--muted)}
+  .flex{display:flex;align-items:center;gap:8px}.flex.wrap{flex-wrap:wrap}
+
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 13px;font-size:12.5px;cursor:pointer;font-weight:600;color:#123c4f;transition:.15s}
+  .btn:hover{border-color:#0d9488;color:#0b6e6a;background:#f2fbfa}
+  .btn.primary{background:linear-gradient(135deg,#0d9488,#2563eb);color:#fff;border:none;box-shadow:0 4px 12px rgba(13,148,136,.28)}
+  .btn.primary:hover{background:linear-gradient(135deg,#0b8177,#1d4ed8);color:#fff}
+  .btn.teal{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;border:none}
+  .btn.gold{background:linear-gradient(135deg,#0f766e,#2563eb);color:#fff;border:none;box-shadow:0 4px 12px rgba(15,118,110,.3)}
+  .btn.gold:hover{background:linear-gradient(135deg,#0d665f,#1d4ed8);color:#fff}
+  .btn.sm{padding:4px 10px;font-size:11.5px}
+  .icon-btn{cursor:pointer;color:var(--muted);font-size:15px;line-height:1;background:none;border:none;padding:2px 4px}
+  .icon-btn:hover{color:#e11d48}
+
+  .heat-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .heat-row:last-child{border-bottom:none}
+  .heat-rank{width:22px;height:22px;border-radius:7px;background:var(--grad);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:0 0 22px}
+  .heat-meta{flex:1;min-width:0}.heat-meta .t{font-weight:600}.heat-meta .s{font-size:11.5px;color:var(--muted)}
+  .ticket{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:9px;box-shadow:0 1px 2px rgba(20,24,40,.04)}
+  .ticket .tt{font-weight:600;font-size:12.5px;margin-bottom:5px}.ticket .ts{font-size:11px;color:var(--muted)}
+  .note-box{background:linear-gradient(135deg,#e2f6fb,#dff7f1);border:1px solid #c6e6ee;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#1c3f52;margin-bottom:18px}
+  .note-box b{color:#0b6e6a}
+  .guide{background:#fff;border:1px solid var(--line);border-left:4px solid #2563eb;border-radius:12px;padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .guide b.t{display:flex;align-items:center;gap:7px;font-size:13px;color:#123c4f;margin-bottom:8px}
+  .guide ul{margin:0;padding-left:18px}
+  .guide li{font-size:12.5px;color:#3f5b6d;line-height:1.75;margin-bottom:2px}
+  .guide li b{color:#0b6e6a}
+  .g-note{font-size:11.5px;color:var(--muted);margin-bottom:10px;line-height:1.6}
+  .empty-guide{font-size:12px;color:var(--muted);padding:8px 0;border:1px dashed var(--line);border-radius:9px;text-align:center;margin-bottom:8px}
+
+  .form-row{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:10px}
+  .form-row input,.form-row select,.form-row textarea{flex:1;min-width:110px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;outline:none;background:#fff;font-family:inherit}
+  .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+  .form-row input.w-sm{flex:0 0 110px;min-width:110px}
+  .form-row input.w-md{flex:0 0 160px;min-width:160px}
+  .form-row textarea{min-height:58px}
+  .form-row .btn{flex:0 0 auto}
+
+  .todo{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:#f1fbf9;border:1px solid #cdeae5;border-left:4px solid #0d9488;border-radius:11px;margin-bottom:9px;transition:.2s}
+  .todo.done{opacity:.55;background:#f3f7fb;border-left-color:#a9bfcd}
+  .todo .ttime{font-size:11.5px;font-weight:700;color:#0f766e;width:44px;flex:0 0 44px;padding-top:1px}
+  .todo .ttext{flex:1;font-size:13.5px;color:#17384a}
+  .todo.done .ttext{text-decoration:line-through}
+  .chk{cursor:pointer;width:17px;height:17px;margin-top:2px;accent-color:#0d9488}
+  .stamp{display:inline-flex;border:2px solid #e11d48;color:#e11d48;border-radius:6px;padding:1px 8px;font-weight:700;font-size:11px;transform:rotate(-9deg);letter-spacing:.12em}
+
+  .src-tag{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px;margin-right:4px}
+  .s-pengpai{background:#dbeafe;color:#1e40af}.s-sanlian{background:#cffafe;color:#0e7490}
+  .s-jiemian{background:#d1fae5;color:#047857}.s-nanfang{background:#e0e7ff;color:#3730a3}
+  .s-caixin{background:#ccfbf1;color:#115e59}.s-weibo{background:#dbeafe;color:#1d4ed8}
+  .s-zhihu{background:#e0f2fe;color:#0369a1}.s-douban{background:#d1fae5;color:#047857}
+  .s-weixin{background:#ccfbf1;color:#0f766e}
+
+  .memo-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#f1fbf9;border:1px solid #cdeae5;border-radius:10px;margin-bottom:8px}
+  .memo-item .dot{width:8px;height:8px;border-radius:50%;background:var(--grad);margin-top:6px;flex:0 0 8px}
+  .memo-item .mt{flex:1;font-size:13px}.memo-item .ms{font-size:11px;color:var(--muted);margin-top:2px}
+  .cal-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .cal-item:last-child{border-bottom:none}
+  .cal-date{font-size:11px;font-weight:700;color:#0f766e;width:48px;flex:0 0 48px;padding-top:2px}
+  .cal-body .ct{font-weight:600;font-size:13px}.cal-body .cs{font-size:11.5px;color:var(--muted)}
+  .wordcloud{display:flex;flex-wrap:wrap;gap:8px;padding:6px 0}
+  .wc{font-size:12px;padding:5px 11px;border-radius:20px;background:#eef3f8;color:#5f7488}
+  .wc.big{font-size:14px;font-weight:700;background:linear-gradient(135deg,#d9f2f8,#e3ebfd);color:#0e7490}
+  .wc.mid{font-size:13px;font-weight:600;background:#e0f6f2;color:#0f766e}
+  .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:1100px){.kanban{grid-template-columns:repeat(2,1fr)}}
+  .col{background:#f4fafd;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .col h4{font-size:12.5px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .col .count{background:#eef0f4;color:#5b6172;border-radius:20px;font-size:11px;padding:1px 8px}
+
+  .insp-card{display:flex;flex-direction:column;gap:9px}
+  .insp-src{font-size:11px;font-weight:700;letter-spacing:.04em}
+  .insp-quote{border-left:3px solid #0d9488;padding:6px 0 6px 11px;background:#f1fbf9;color:#1c3f52;font-size:13px}
+  .insp-note{font-size:12px;color:#3f5b6d}.insp-note b{color:#0b6e6a}
+  .chip{display:inline-block;font-size:11px;background:#eef3f8;color:#5f7488;border-radius:6px;padding:3px 9px;margin:2px 4px 2px 0;cursor:pointer;border:none;font-family:inherit}
+  .chip.on{background:var(--primary-soft);color:#0b6e6a;font-weight:600}
+  .tag{display:inline-block;font-size:11px;background:#e0f6f2;color:#0b6e6a;border-radius:20px;padding:2px 9px;margin:2px 4px 2px 0}
+  .tag.attr{background:#e3ebfd;color:#1e40af}
+  .empty{font-size:12px;color:var(--muted);padding:8px 0}
+
+  .intel-band{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:16px;margin-bottom:18px;
+    background:linear-gradient(120deg,#0d3b5c,#0d6b66 55%,#1d4ed8);color:#fff;position:relative;overflow:hidden;box-shadow:0 10px 28px rgba(13,59,92,.22)}
+  .intel-band::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(600px 220px at 92% -20%,rgba(255,255,255,.18),transparent 70%)}
+  .intel-band>*{position:relative;z-index:1}
+  .radar{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.5);position:relative;flex:0 0 46px;overflow:hidden;background:rgba(255,255,255,.07)}
+  .radar::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(255,255,255,.8),rgba(255,255,255,.06) 45%,transparent 72%);animation:sweep 2.6s linear infinite}
+  .radar::after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:linear-gradient(90deg,transparent 49%,rgba(255,255,255,.4) 49%,rgba(255,255,255,.4) 51%,transparent 51%),
+               linear-gradient(0deg,transparent 49%,rgba(255,255,255,.4) 49%,rgba(255,255,255,.4) 51%,transparent 51%)}
+  @keyframes sweep{to{transform:rotate(360deg)}}
+  .ib-title{font-size:17px;font-weight:800;letter-spacing:.08em}
+  .ib-sub{font-size:12px;opacity:.84;margin-top:2px}
+
+  .modal{position:fixed;inset:0;background:rgba(10,40,60,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+  .modal.on{display:flex}
+  .modal-box{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:86vh;overflow:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+  .modal-box h3{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:#123c4f}
+  .mrow{display:flex;gap:8px;margin-bottom:8px}
+  .mrow input,.mrow textarea,.mrow select{flex:1;min-width:90px;border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none}
+  .mrow input:focus,.mrow textarea:focus,.mrow select:focus{border-color:#0d9488}
+  .mrow textarea{min-height:56px}
+  .mini{background:#f4fafd;border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-bottom:7px;display:flex;gap:8px;align-items:flex-start;font-size:12.5px}
+  .mini .mt{flex:1}
+  .mini .mp{font-size:11px;color:var(--muted)}
+  .preview{background:#f4fafd;border:1px dashed var(--line);border-radius:10px;padding:12px;font-size:12.5px;white-space:pre-wrap;margin-top:10px;color:#1c3f52}
+  .sub-h{font-size:12px;font-weight:700;color:#0f766e;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+
+  @media(max-width:760px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:static;height:auto;flex-direction:row;align-items:center;gap:6px;padding:8px 10px;overflow-x:auto;background:linear-gradient(90deg,#0d3b5c,#10514f 60%,#0d6b66)}
+    .brand{padding:0 10px 0 2px;flex:0 0 auto}.brand .sub{display:none}
+    .nav-group,.side-foot{display:none}
+    .nav-item{padding:8px 11px;font-size:12.5px;white-space:nowrap;flex:0 0 auto}
+    .nav-item svg{display:none}
+    .content{padding:14px}
+    .grid,.kanban{grid-template-columns:1fr}
+    .topbar{padding:0 12px;gap:8px}.topbar h1{font-size:15px}.date-pill{display:none}
+    .card{padding:14px}
+    table{font-size:12px}th,td{padding:8px 6px}
+    .form-row input,.form-row select,.form-row textarea{min-width:100%}
+    .form-row input.w-sm,.form-row input.w-md,.form-row select.w-sm,.form-row select.w-md{min-width:100%;flex:1}
+    .intel-band{padding:13px 14px;gap:12px}.ib-title{font-size:15px}
+    .stat .num{font-size:22px}
+    .modal-box{padding:16px;max-height:90vh}
+    .mrow{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">咪</div>
+    <div><div class="name">至尊咪</div><div class="sub">咪也要上班</div></div>
+  </div>
+
+  <div class="nav-group">案头</div>
+  <div class="nav-item active" data-view="memorial">
+    <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6Z"/><path d="M9 9h7M9 13h7M9 17h4"/></svg>
+    批奏折<span class="nav-tag" id="tagTodo">0</span>
+  </div>
+  <div class="nav-item" data-view="radar">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><path d="M12 12 20 6"/></svg>
+    天津站情报处<span class="nav-tag" id="tagHot">0</span>
+  </div>
+
+  <div class="nav-group">协作链路</div>
+  <div class="nav-item" data-view="creator">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 7a3 3 0 0 1 0 6"/><path d="M17 14a5.5 5.5 0 0 1 4 5"/></svg>
+    创作者运营
+  </div>
+  <div class="nav-item" data-view="collection">
+    <svg viewBox="0 0 24 24"><path d="M12 3 21 8l-9 5-9-5Z"/><path d="M3 12l9 5 9-5"/><path d="M3 16l9 5 9-5"/></svg>
+    专题合集&投放
+  </div>
+
+  <div class="nav-group">我的台账</div>
+  <div class="nav-item" data-view="heat">
+    <svg viewBox="0 0 24 24"><path d="M12 3s-7 7-7 12a7 7 0 0 0 14 0C19 10 12 3 12 3Z"/><path d="M12 9v6M9 12h6"/></svg>
+    加热记录
+  </div>
+  <div class="nav-item" data-view="inspiration">
+    <svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 17h5"/></svg>
+    我的灵感库
+  </div>
+
+  <div class="side-foot">数据存在本机浏览器<br/>记得偶尔「导出」备份</div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <h1 id="viewTitle">批奏折</h1>
+    <span class="date-pill" id="today"></span>
+    <div class="spacer"></div>
+    <button class="btn sm" onclick="exportData()" title="导出一份 JSON 备份">⬇ 导出</button>
+    <button class="btn sm" onclick="$('importFile').click()" title="从 JSON 备份恢复">⬆ 导入</button>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importData(this.files[0]);this.value=''" />
+    <div class="avatar">咪</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ========== 批奏折 ========== -->
+    <section class="view active" id="view-memorial">
+      <div class="note-box">📜 至尊咪，今日有 <b id="nbTodo">0</b> 道奏折待批。批完即知今日该落哪几笔——这里是每天的主战场。</div>
+
+      <div class="guide">
+        <b class="t">📜 这个板块能做什么</b>
+        <ul>
+          <li><b>每日 Todo 是核心</b>：写下今天要落的一笔（几点、做什么），做完打勾，勾上会盖「已批」。</li>
+          <li><b>四个数看全局</b>：待批奏折 / 在跟热点 / 加热记录 / 待跟进协作——一眼知道今天压着什么。</li>
+          <li><b>热点速览</b>：自动同步情报处的热点，不用切换也能扫一眼。</li>
+          <li><b>加热池看板</b>：手动把候选单集在「待初筛 → 高潜 → 已加热 → 已推送放」四列里挪，当成你的筛选台。</li>
+          <li><b>自动收单</b>：在别处点「push 给主播」「登记加热」，都会自动往这里加一条待办，不会漏。</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-color:#cdeae5">
+        <h3>📜 今日奏折 · 每日 Todo <span class="spacer"></span><span class="pill p-amber" id="todoLeft">0 待批</span></h3>
+        <div class="form-row">
+          <input id="t_time" class="w-sm" placeholder="时间 09:20" />
+          <input id="t_text" placeholder="今天要落的一笔，如：回访 @声东击西 反馈是否采纳" />
+          <button class="btn gold" onclick="addTodo()">上奏</button>
+        </div>
+        <div id="todoList"></div>
+      </div>
+
+      <div class="grid g-4" style="margin-top:16px">
+        <div class="card stat"><div class="num" id="sTodo">0</div><div class="lbl">待批奏折</div><div class="delta amber">每日 Todo 未完成</div></div>
+        <div class="card stat"><div class="num" id="sHot">0</div><div class="lbl">在跟热点</div><div class="delta up">情报处档案数</div></div>
+        <div class="card stat"><div class="num" id="sHeat">0</div><div class="lbl">加热记录</div><div class="delta">累计条数</div></div>
+        <div class="card stat"><div class="num" id="sCollab">0</div><div class="lbl">待跟进协作</div><div class="delta">反馈 + 待认领合集</div></div>
+      </div>
+
+      <div class="section-title">热点速览 <small>来自天津站情报处</small></div>
+      <div class="card" id="hotBrief"></div>
+
+      <div class="section-title">加热池状态 <small>可自行增删卡片</small></div>
+      <div class="kanban" id="kanban"></div>
+    </section>
+
+    <!-- ========== 天津站情报处 ========== -->
+    <section class="view" id="view-radar">
+      <div class="intel-band">
+        <div class="radar"></div>
+        <div>
+          <div class="ib-title">天津站情报处</div>
+          <div class="ib-sub">多源热点聚合 · 每日简报 · 内部参考 · 信号正常</div>
+        </div>
+        <div class="spacer"></div>
+        <span class="pill p-teal" id="hotCountPill">0 条在跟</span>
+      </div>
+
+      <div class="guide">
+        <b class="t">📡 这个板块能做什么</b>
+        <ul>
+          <li><b>三块信源面板</b>（媒体追踪 / 情绪监测 / 出版日历）：全部<b>手动录入</b>，AI 整理好的粘贴进来、或你亲眼看到的随手记一条。</li>
+          <li><b>热点档案</b>：给每条热点开一个档案，存「<b>标题库</b>」（长视频/公众号/媒体各怎么起标题）+「<b>稿件思路 / 切入角度</b>」（人物稿怎么写、差异化怎么说、播客能切什么）。这是<b>职业视角</b>。</li>
+          <li><b>自己的热点备忘</b>：站外抓不到的、你亲眼看见的（朋友圈、群聊、线下）——补 AI 的盲区。</li>
+          <li><b>三个动作</b>：点 push → 生成选题建议卡；点 加热 → 自动生成待办；档案里点 存灵感 → 那句打动你的话进「我的灵感库」。</li>
+          <li><b>边界</b>：别人的标题和思路放这里；打动你个人的金句、精彩段落放灵感库。两边不混。</li>
+        </ul>
+      </div>
+
+      <div class="grid g-3">
+        <div class="card"><h3>📰 主流 / 深度媒体追踪</h3>
+          <div class="g-note">记澎湃、三联、界面、南周、财新等的头条与重磅报道：谁在跟、跟到什么程度、属于哪个板块。</div>
+          <div id="mediaList"></div>
+          <div class="form-row" style="margin-top:10px">
+            <select id="md_src" class="w-sm"><option>澎湃</option><option>三联</option><option>界面</option><option>南周</option><option>财新</option><option>其他</option></select>
+            <input id="md_t" placeholder="标题 / 议题" />
+            <input id="md_s" class="w-sm" placeholder="版面/板块" />
+            <button class="btn teal sm" onclick="addMedia()">+</button>
+          </div>
+        </div>
+        <div class="card"><h3>💬 泛社会情绪监测</h3>
+          <div class="g-note">记微博热搜、知乎热榜、豆瓣小组、微信公众号高阅读：大家在讨论什么、核心情绪词是什么。下面的词云由你填的情绪词自动生成。</div>
+          <div id="moodList"></div>
+          <div style="margin-top:10px"><div class="muted" style="font-size:11px;margin-bottom:6px">情绪词云（自动生成）</div>
+            <div class="wordcloud" id="wordCloud"></div>
+          </div>
+          <div class="form-row" style="margin-top:10px">
+            <select id="mo_p" class="w-sm"><option>微博</option><option>知乎</option><option>豆瓣</option><option>微信</option><option>小红书</option><option>抖音</option><option>其他</option></select>
+            <input id="mo_t" placeholder="话题 / 讨论" />
+            <input id="mo_w" class="w-sm" placeholder="情绪词" />
+            <button class="btn teal sm" onclick="addMood()">+</button>
+          </div>
+        </div>
+        <div class="card"><h3>📅 文化 / 学术出版日历</h3>
+          <div class="g-note">记人文社科新书上市、名家诞辰/逝世周年、历史事件纪念日、法规施行与案件宣判节点——提前知道哪天有窗口。</div>
+          <div id="calList"></div>
+          <div class="form-row" style="margin-top:10px">
+            <input id="ca_d" class="w-sm" placeholder="日期 06-18" />
+            <input id="ca_t" placeholder="事件 / 节点" />
+            <input id="ca_c" class="w-sm" placeholder="类型" />
+            <button class="btn teal sm" onclick="addCal()">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">热点档案 <small>你手动添加 · 记标题库与稿件思路 · 与个人灵感分开</small></div>
+      <div class="card">
+        <div class="form-row">
+          <input id="nh_title" placeholder="热点名称，如：刘欢去世" />
+          <input id="nh_cat" class="w-sm" placeholder="板块 人文·社会" />
+          <input id="nh_mood" class="w-sm" placeholder="情绪 追忆+共鸣" />
+          <select id="nh_gap" class="w-sm"><option value="1">有缺口</option><option value="0">已有内容</option></select>
+          <button class="btn primary" onclick="addHot()">+ 添加热点</button>
+        </div>
+        <div class="form-row">
+          <textarea id="nh_bulk" placeholder="批量粘贴 AI 整理的热点（一行一个），点右侧按钮批量导入"></textarea>
+          <button class="btn teal" onclick="bulkHot()">⬇ 批量导入</button>
+        </div>
+        <table>
+          <thead><tr><th>热点</th><th>板块</th><th>情绪</th><th>供给</th><th>标题库</th><th>思路</th><th>操作</th></tr></thead>
+          <tbody id="hotBody"></tbody>
+        </table>
+      </div>
+
+      <div class="section-title">自己的热点备忘 <small>站外抓不到的、你亲眼看见的</small></div>
+      <div class="card">
+        <div class="form-row">
+          <input id="memoText" placeholder="手写一条热点备忘，如：朋友圈在转某高校取消早自习的争议" />
+          <select id="memoSrc" class="w-sm"><option>亲眼见</option><option>朋友圈</option><option>群聊</option><option>线下</option><option>其他</option></select>
+          <button class="btn gold" onclick="addMemo()">记下</button>
+        </div>
+        <div id="memoList"></div>
+      </div>
+    </section>
+
+    <!-- ========== 加热记录 ========== -->
+    <section class="view" id="view-heat">
+      <div class="note-box">🔥 <b>加热记录台账</b>：公司自有看板负责实际加热，这里只做<b>记录</b>——加热了哪些单集、挂哪个位置、效果如何。纯本地台账。</div>
+
+      <div class="guide">
+        <b class="t">🔥 这个板块能做什么</b>
+        <ul>
+          <li><b>只做记录，不做操作</b>：加热在公司看板里点，这里记下「哪天 / 哪集 / 哪个节目 / 挂哪个推荐位」。</li>
+          <li><b>记效果</b>：加热前 PV、加热后 PV（自动算增幅），再补完播率、新增订阅、长评数——这三个才是判断「值不值得加热」的关键。</li>
+          <li><b>自动汇总</b>：累计条数、累计 PV 增量、平均增幅、本周加热单集。</li>
+          <li><b>攒久了能复盘</b>：哪类内容加热后增幅高、哪个推荐位更有效、完播高的单集有什么共同点。</li>
+          <li><b>快捷键</b>：在情报处热点那行点「加热」，会自动在这里生成一条待办提醒你补数据。</li>
+        </ul>
+      </div>
+
+      <div class="grid g-4">
+        <div class="card stat"><div class="num" id="heatCount">0</div><div class="lbl">累计加热记录</div></div>
+        <div class="card stat"><div class="num" id="heatTotal">0</div><div class="lbl">累计 PV 增量</div><div class="delta up">后 − 前</div></div>
+        <div class="card stat"><div class="num" id="heatAvg">0%</div><div class="lbl">平均增幅</div></div>
+        <div class="card stat"><div class="num" id="heatWeek">0</div><div class="lbl">本周加热单集</div><div class="delta up">近 7 天</div></div>
+      </div>
+
+      <div class="section-title">新增一条加热记录</div>
+      <div class="card">
+        <div class="form-row">
+          <input id="h_date" type="date" class="w-md" />
+          <input id="h_ep" placeholder="单集名称，如：独居与附近的重建" />
+          <input id="h_show" class="w-md" placeholder="节目，如：不合时宜" />
+        </div>
+        <div class="form-row">
+          <select id="h_cat"><option>社会</option><option>阅读</option><option>历史</option><option>时政</option><option>法律</option><option>人文</option><option>社会·阅读</option><option>阅读·人文</option><option>人文·社会</option></select>
+          <select id="h_slot"><option>首页信息流</option><option>编辑精选</option><option>周末焦点</option><option>合集</option><option>阅读频道 banner</option><option>频道推荐位</option></select>
+          <input id="h_before" type="number" class="w-sm" placeholder="加热前 PV" />
+          <input id="h_after" type="number" class="w-sm" placeholder="加热后 PV" />
+        </div>
+        <div class="form-row">
+          <input id="h_finish" class="w-sm" placeholder="完播率 62%" />
+          <input id="h_subs" class="w-sm" placeholder="新增订阅 +820" />
+          <input id="h_cmts" class="w-sm" placeholder="长评数 37" />
+          <input id="h_note" placeholder="备注，如：接小红书热点，切片传播好" />
+          <button class="btn gold" onclick="addHeat()">记入台账</button>
+        </div>
+      </div>
+
+      <div class="section-title">加热台账 <small>每天加热了什么 · 效果如何</small></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>日期</th><th>单集 / 节目</th><th>板块</th><th>加热位</th><th>前PV</th><th>后PV</th><th>增幅</th><th>完播</th><th>订阅</th><th>长评</th><th>备注</th><th></th></tr></thead>
+          <tbody id="heatBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========== 创作者运营 ========== -->
+    <section class="view" id="view-creator">
+      <div class="note-box">🤝 <b>创作者运营</b>：向上协作。诊断反馈单 + 选题建议卡，两张卡都能一键复制发给创作者运营。</div>
+
+      <div class="guide">
+        <b class="t">🤝 这个板块能做什么</b>
+        <ul>
+          <li><b>诊断反馈单</b>：听完一集后给主播的修改建议——优点 / 问题 / 可执行建议 / 优先级 / 状态。写完点「复制单据」直接粘进微信。</li>
+          <li><b>选题建议卡</b>：热点来时反向 push 主播——指派谁、切入视角（避免和别人撞）、推荐主播类型、参考灵感、截止时间。</li>
+          <li><b>潜力主播雷达</b>：记你盯上的人，标「建议关注 / 可加热 / 观察」，写上观察理由。</li>
+          <li><b>我的负责创作者</b>：记订阅量、近 30 天增幅、下期选题——为订阅增长负责的那批人。</li>
+          <li><b>灵感也能进来</b>：灵感库里点「转选题卡」，直接生成一张待派的选题建议卡。</li>
+        </ul>
+      </div>
+
+      <div class="grid g-2">
+        <div class="card"><h3>💬 反馈工作台 · 诊断反馈单 <span class="spacer"></span><span class="pill p-gray" id="fbCount">0</span></h3>
+          <div id="fbList"></div>
+          <div class="form-row" style="margin-top:10px">
+            <input id="fb_who" class="w-sm" placeholder="@主播" />
+            <input id="fb_text" placeholder="一句话反馈，如：片头可更抓热点" />
+            <button class="btn teal sm" onclick="addFb()">+</button>
+          </div>
+        </div>
+        <div class="card"><h3>🚀 反向 Push · 选题建议卡 <span class="spacer"></span><span class="pill p-gray" id="pushCount">0</span></h3>
+          <div id="pushList"></div>
+          <div class="form-row" style="margin-top:10px">
+            <input id="pu_topic" placeholder="选题/热点" />
+            <input id="pu_who" class="w-sm" placeholder="@主播" />
+            <button class="btn primary sm" onclick="addPush()">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g-2">
+        <div class="card"><h3>📡 潜力主播雷达</h3>
+          <div class="g-note">把你盯上的主播记下来，标一个结论并写明理由——挖人这件事靠积累，不靠一次性判断。</div>
+          <div id="potList"></div>
+          <div class="form-row" style="margin-top:10px">
+            <input id="pt_name" class="w-sm" placeholder="主播名" />
+            <select id="pt_cat" class="w-sm"><option>社会</option><option>阅读</option><option>历史</option><option>时政</option><option>法律</option><option>人文</option></select>
+            <input id="pt_note" placeholder="观察理由，如：完播高曝光低" />
+            <select id="pt_tag" class="w-sm"><option>建议关注</option><option>可加热</option><option>观察</option></select>
+            <button class="btn teal sm" onclick="addPot()">+</button>
+          </div>
+        </div>
+        <div class="card"><h3>我的负责创作者 · 订阅增长</h3>
+          <table>
+            <thead><tr><th>主播</th><th>板块</th><th>订阅</th><th>近30天</th><th>下期选题</th><th></th></tr></thead>
+            <tbody id="crBody"></tbody>
+          </table>
+          <div class="form-row" style="margin-top:10px">
+            <input id="cr_name" class="w-sm" placeholder="主播" />
+            <select id="cr_cat" class="w-sm"><option>社会</option><option>阅读</option><option>历史</option><option>时政</option><option>法律</option><option>人文</option></select>
+            <input id="cr_subs" class="w-sm" placeholder="订阅 48.2w" />
+            <input id="cr_growth" class="w-sm" placeholder="增幅 +5.1%" />
+            <input id="cr_next" placeholder="下期选题" />
+            <button class="btn teal sm" onclick="addCr()">+</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 专题合集&投放 ========== -->
+    <section class="view" id="view-collection">
+      <div class="note-box">📦 <b>专题合集 & 投放</b>：向下协作。每个合集可写一张「投放卖点卡」（推荐理由/适合受众/受众痛点/宣传金句），一键复制给投放团队。</div>
+
+      <div class="guide">
+        <b class="t">📦 这个板块能做什么</b>
+        <ul>
+          <li><b>攒合集</b>：把有潜力的单集攒成一个专题（名字 / 集数 / 目标推荐位 / 状态 草稿→待认领→已排期→已上线）。</li>
+          <li><b>写投放卖点卡</b>：推荐理由、适合受众、受众痛点、宣传金句——四句话把「为什么推、推给谁」说清，点「复制卖点卡」发给投放团队。</li>
+          <li><b>投放效果回流</b>：合集上线后回填曝光和订阅转化，下次攒合集时知道什么类型更吃香。</li>
+          <li><b>卡片的字段怎么写</b>见右下角说明，照着填就行。</li>
+        </ul>
+      </div>
+
+      <div class="card"><h3>🧩 合集 & 推送放清单</h3>
+        <table>
+          <thead><tr><th>合集/单集</th><th>集数</th><th>推荐位</th><th>状态</th><th>卖点卡</th><th></th></tr></thead>
+          <tbody id="colBody"></tbody>
+        </table>
+        <div class="form-row" style="margin-top:12px">
+          <input id="c_name" placeholder="合集名，如：一周社会情绪观察" />
+          <input id="c_eps" class="w-sm" placeholder="集数" />
+          <select id="c_slot" class="w-md"><option>首页信息流</option><option>编辑精选</option><option>周末焦点</option><option>阅读频道 banner</option></select>
+          <select id="c_status" class="w-sm"><option>草稿</option><option>待认领</option><option>已排期</option><option>已上线</option></select>
+          <button class="btn primary sm" onclick="addCol()">+</button>
+        </div>
+      </div>
+
+      <div class="grid g-2" style="margin-top:16px">
+        <div class="card"><h3>📊 投放效果回流</h3>
+          <table>
+            <thead><tr><th>合集/单集</th><th>曝光</th><th>订阅转化</th><th></th></tr></thead>
+            <tbody id="effBody"></tbody>
+          </table>
+          <div class="form-row" style="margin-top:12px">
+            <input id="e_name" placeholder="合集名" />
+            <input id="e_exp" class="w-sm" placeholder="曝光 12.4w" />
+            <input id="e_conv" class="w-sm" placeholder="转化 +1.8k" />
+            <button class="btn teal sm" onclick="addEff()">+</button>
+          </div>
+        </div>
+        <div class="card"><h3>💡 卖点卡字段说明</h3>
+          <div class="insp-quote"><b>推荐理由</b>：这集为什么值得推（1-2 句）<br><b>适合受众</b>：推给谁看<br><b>受众痛点</b>：他们此刻在焦虑/关心什么<br><b>宣传金句</b>：可直接做文案的那句话</div>
+          <div class="muted" style="font-size:12px;margin-top:10px">写完后点「复制卖点卡」，直接粘到微信发给投放团队。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 灵感库 ========== -->
+    <section class="view" id="view-inspiration">
+      <div class="note-box">📚 <b>我的灵感库</b>：属于<b>你个人</b>的摘抄——印象深刻的话、出色的书写段落。职业视角的标题库和稿件思路请记在「情报处 · 热点档案」里，两者分开。</div>
+
+      <div class="guide">
+        <b class="t">📚 这个板块能做什么</b>
+        <ul>
+          <li><b>摘你自己的</b>：看公众号、书籍、小红书、抖音、播客、长视频时，那句打动你的话、那段出色的书写——存进来。</li>
+          <li><b>双层标签</b>：<b>议题标签</b>（附近消失 / 精神内耗 / 历史镜像 / 职场延展…）管「讲什么」，<b>属性标签</b>（金句 / 独到观点 / 案例 / 情绪共鸣）管「是什么」。三行筛选可叠加，交叉一筛就能凑出一个专题。</li>
+          <li><b>写批注</b>：记下「可延展成什么选题」，未来的你会感谢现在的你。</li>
+          <li><b>一键转选题卡</b>：某条摘抄想做了，点「转选题卡」直接生成建议卡推给主播。</li>
+          <li><b>和情报处的分工</b>：别人的标题、人物稿思路 → 情报处·热点档案；打动你的句子 → 这里。档案里点「存灵感」会把内容送过来。</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>+ 快速摘录</h3>
+        <div class="form-row">
+          <select id="i_src" class="w-sm"><option>公众号</option><option>书籍</option><option>小红书</option><option>抖音</option><option>播客</option><option>长视频</option><option>媒体</option></select>
+          <input id="i_from" class="w-md" placeholder="出处，如：《刘欢访谈录》" />
+          <select id="i_cat" class="w-sm"><option>社会</option><option>阅读</option><option>历史</option><option>时政</option><option>法律</option><option>人文</option><option>社会·阅读</option><option>人文·社会</option><option>历史·阅读</option></select>
+        </div>
+        <div class="form-row"><textarea id="i_quote" placeholder="原文摘抄 / 那句打动你的话"></textarea></div>
+        <div class="form-row">
+          <input id="i_topics" placeholder="议题标签，逗号分隔：法律争议,历史镜像" />
+          <input id="i_attrs" class="w-md" placeholder="属性标签：金句,独到观点" />
+        </div>
+        <div class="form-row">
+          <input id="i_note" placeholder="我的批注 / 可延展选题" />
+          <button class="btn gold" onclick="addInsp()">存入灵感库</button>
+        </div>
+      </div>
+
+      <div class="sub-h">按来源</div><div class="flex wrap" id="inspChips"></div>
+      <div class="sub-h">按议题标签</div><div class="flex wrap" id="topicChips"></div>
+      <div class="sub-h">按属性标签</div><div class="flex wrap" id="attrChips"></div>
+      <div class="grid g-3" id="inspList" style="margin-top:12px"></div>
+    </section>
+
+  </div>
+</main>
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box"><div id="modalBody"></div></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='zym_data_v3';
+const uid=()=>Date.now()+Math.random().toString(36).slice(2,6);
+const esc=s=>(s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('zh-CN');
+const v=id=>($(id)?$(id).value.trim():'');
+
+const DEFAULT={
+  /* 所有内容由你手动添加，这里只保留空的数据结构 */
+  todos:[],
+  memos:[],
+  hotspots:[],
+  heats:[],
+  insp:[],
+  fbs:[],
+  pushes:[],
+  creators:[],
+  potentials:[],
+  cols:[],
+  effs:[],
+  media:[],   // 主流/深度媒体追踪
+  moods:[],   // 泛社会情绪监测
+  cal:[],     // 文化/学术出版日历
+  kanban:{sift:[],high:[],heated:[],sent:[]}
+};
+
+let D=(()=>{try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT));})();
+const save=()=>localStorage.setItem(KEY,JSON.stringify(D));
+const SRCCOLOR={'书籍':'#1d4ed8','公众号':'#0d9488','小红书':'#2563eb','抖音':'#0f766e','播客':'#0284c7','长视频':'#0e7490','媒体':'#3730a3'};
+
+/* ---------- 弹窗 ---------- */
+function openModal(html){$('modalBody').innerHTML=html;$('modal').classList.add('on');}
+function closeModal(){$('modal').classList.remove('on');}
+
+/* ---------- 批奏折 / Todo ---------- */
+function renderTodos(){
+  $('todoList').innerHTML=D.todos.map(t=>
+    '<div class="todo'+(t.done?' done':'')+'">'+
+    '<input type="checkbox" class="chk" '+(t.done?'checked':'')+' onchange="toggleTodo(\''+t.id+'\')">'+
+    '<div class="ttime">'+esc(t.time||'')+'</div>'+
+    '<div class="ttext">'+esc(t.text)+(t.done?' <span class="stamp">已批</span>':'')+'</div>'+
+    '<button class="icon-btn" onclick="delTodo(\''+t.id+'\')">×</button></div>').join('')||'<div class="empty">今日无事，可退朝。</div>';
+  const left=D.todos.filter(t=>!t.done).length;
+  $('todoLeft').textContent=left+' 待批';$('nbTodo').textContent=left;$('sTodo').textContent=left;
+  const tag=$('tagTodo');tag.textContent=left;tag.classList.toggle('hide',left===0);
+}
+function addTodo(){const text=v('t_text');if(!text)return;D.todos.push({id:uid(),time:v('t_time'),text,done:false});$('t_time').value='';$('t_text').value='';save();renderTodos();}
+function toggleTodo(id){const t=D.todos.find(x=>x.id==id);if(t){t.done=!t.done;save();renderTodos();}}
+function delTodo(id){D.todos=D.todos.filter(x=>x.id!=id);save();renderTodos();}
+
+/* ---------- 天津站情报处：热点档案 ---------- */
+function renderHotspots(){
+  $('hotBody').innerHTML=D.hotspots.map(h=>
+    '<tr><td class="row-title">'+esc(h.title)+'</td><td><span class="pill p-blue">'+esc(h.cat||'—')+'</span></td>'+
+    '<td><span class="pill '+(h.gap?'p-amber':'p-teal')+'">'+esc(h.mood||'—')+'</span></td>'+
+    '<td><span class="pill '+(h.gap?'p-rose':'p-teal')+'">'+(h.gap?'缺口':'已有')+'</span></td>'+
+    '<td>'+(h.titles||[]).length+' 条</td><td>'+(h.angles||[]).length+' 条</td>'+
+    '<td><button class="btn sm" onclick="openArchive(\''+h.id+'\')">档案</button> '+
+    '<button class="btn teal sm" onclick="hotToPush(\''+h.id+'\')">push</button> '+
+    '<button class="btn primary sm" onclick="hotToHeat(\''+h.id+'\')">加热</button> '+
+    '<button class="icon-btn" onclick="delHot(\''+h.id+'\')">×</button></td></tr>').join('')||'<tr><td colspan="7" class="empty">还没有热点，用上面表单添加或批量粘贴</td></tr>';
+  $('hotBrief').innerHTML=D.hotspots.slice(0,4).map((h,i)=>
+    '<div class="heat-row"><div class="heat-rank">'+(i+1)+'</div><div class="heat-meta"><div class="t">'+esc(h.title)+'</div>'+
+    '<div class="s">'+esc(h.cat||'')+' · '+esc(h.mood||'')+' · 标题 '+((h.titles||[]).length)+' / 思路 '+((h.angles||[]).length)+'</div></div>'+
+    '<span class="pill '+(h.gap?'p-amber':'p-teal')+'">'+(h.gap?'待 push':'可加热')+'</span></div>').join('')||'<div class="empty">暂无热点</div>';
+  $('sHot').textContent=D.hotspots.length;
+  const tag=$('tagHot');tag.textContent=D.hotspots.length;tag.classList.toggle('hide',!D.hotspots.length);
+  $('hotCountPill').textContent=D.hotspots.length+' 条在跟';
+}
+function addHot(){const t=v('nh_title');if(!t)return;
+  D.hotspots.unshift({id:uid(),title:t,cat:v('nh_cat')||'—',mood:v('nh_mood')||'—',gap:$('nh_gap').value==='1',titles:[],angles:[]});
+  $('nh_title').value='';$('nh_cat').value='';$('nh_mood').value='';save();renderHotspots();}
+function bulkHot(){
+  const lines=v('nh_bulk').split('\n').map(s=>s.replace(/^[\d.\-、\s]+/,'').trim()).filter(Boolean);
+  if(!lines.length)return;
+  lines.forEach(t=>D.hotspots.unshift({id:uid(),title:t,cat:'—',mood:'—',gap:true,titles:[],angles:[]}));
+  $('nh_bulk').value='';save();renderHotspots();alert('已导入 '+lines.length+' 条热点');
+}
+function delHot(id){D.hotspots=D.hotspots.filter(h=>h.id!=id);save();renderHotspots();}
+
+function openArchive(id){
+  const h=D.hotspots.find(x=>x.id==id);if(!h)return;
+  const titles=(h.titles||[]).map(x=>'<div class="mini"><div class="mt">'+esc(x.t)+'<div class="mp">'+esc(x.p||'')+'</div></div>'+
+    '<button class="btn sm" onclick="archToInsp(\''+id+'\',\'t\',\''+x.id+'\')">存灵感</button>'+
+    '<button class="icon-btn" onclick="delArch(\''+id+'\',\'t\',\''+x.id+'\')">×</button></div>').join('')||'<div class="empty">还没记标题</div>';
+  const angles=(h.angles||[]).map(x=>'<div class="mini"><div class="mt">'+esc(x.t)+'</div>'+
+    '<button class="btn sm" onclick="archToInsp(\''+id+'\',\'a\',\''+x.id+'\')">存灵感</button>'+
+    '<button class="icon-btn" onclick="delArch(\''+id+'\',\'a\',\''+x.id+'\')">×</button></div>').join('')||'<div class="empty">还没记思路</div>';
+  openModal('<h3>📁 热点档案 · '+esc(h.title)+'</h3>'+
+    '<div class="muted" style="font-size:12px;margin-bottom:10px">职业视角：记大家的标题、人物稿思路、切入角度。打动你个人的句子请点「存灵感」送进灵感库。</div>'+
+    '<div class="sub-h">📰 标题库 <small>各平台怎么起标题</small></div>'+titles+
+    '<div class="mrow"><input id="at_t" placeholder="标题，如：长视频｜盘点刘欢的OST生涯"><input id="at_p" placeholder="平台" style="max-width:110px"><button class="btn teal sm" onclick="addArch(\''+id+'\',\'t\')">+</button></div>'+
+    '<div class="sub-h">🧭 稿件思路 / 切入角度</div>'+angles+
+    '<div class="mrow"><textarea id="at_a" placeholder="思路，如：人物稿主流思路 = 天才叙事 + 晚年退隐 + 集体记忆"></textarea><button class="btn primary sm" onclick="addArch(\''+id+'\',\'a\')">+</button></div>'+
+    '<div style="margin-top:14px"><button class="btn" onclick="closeModal()">关闭</button></div>');
+}
+function addArch(id,kind){
+  const h=D.hotspots.find(x=>x.id==id);if(!h)return;
+  if(kind==='t'){const t=v('at_t');if(!t)return;h.titles=h.titles||[];h.titles.push({id:uid(),t,p:v('at_p')});}
+  else{const t=v('at_a');if(!t)return;h.angles=h.angles||[];h.angles.push({id:uid(),t});}
+  save();openArchive(id);renderHotspots();
+}
+function delArch(id,kind,xid){
+  const h=D.hotspots.find(x=>x.id==id);if(!h)return;
+  if(kind==='t')h.titles=(h.titles||[]).filter(x=>x.id!=xid);else h.angles=(h.angles||[]).filter(x=>x.id!=xid);
+  save();openArchive(id);renderHotspots();
+}
+function archToInsp(id,kind,xid){
+  const h=D.hotspots.find(x=>x.id==id);if(!h)return;
+  const list=kind==='t'?(h.titles||[]):(h.angles||[]);
+  const item=list.find(x=>x.id==xid);if(!item)return;
+  D.insp.unshift({id:uid(),src:kind==='t'?(item.p||'媒体'):'媒体',from:h.title,
+    cat:(h.cat&&h.cat!=='—')?h.cat:'人文',quote:item.t,note:'来自热点档案「'+h.title+'」',
+    topics:[],attrs:kind==='t'?['标题参考']:['思路']});
+  save();renderInsp();alert('已存入灵感库');
+}
+function hotToPush(id){
+  const h=D.hotspots.find(x=>x.id==id);if(!h)return;
+  D.pushes.unshift({id:uid(),topic:h.title,who:'待指派',status:'待接单',angle:'',hostType:'',ref:'热点档案：'+h.title,due:''});
+  D.todos.unshift({id:uid(),time:'',text:'完善「'+h.title+'」的选题建议卡（切入视角 / 推荐主播类型）',done:false});
+  save();renderAll();alert('已生成选题建议卡 → 创作者运营 / 反向 Push');
+}
+function hotToHeat(id){
+  const h=D.hotspots.find(x=>x.id==id);if(!h)return;
+  D.todos.unshift({id:uid(),time:'',text:'加热「'+h.title+'」相关单集，并在加热记录补效果数据',done:false});
+  save();renderAll();alert('已加入今日待办');
+}
+
+/* ---------- 情报处：三块信源面板（全部手动录入） ---------- */
+const MEDIA_CLS={'澎湃':'s-pengpai','三联':'s-sanlian','界面':'s-jiemian','南周':'s-nanfang','财新':'s-caixin'};
+const MOOD_CLS={'微博':'s-weibo','知乎':'s-zhihu','豆瓣':'s-douban','微信':'s-weixin','小红书':'s-pengpai','抖音':'s-nanfang'};
+function renderSources(){
+  $('mediaList').innerHTML=D.media.map(m=>
+    '<div class="heat-row"><div class="heat-meta"><div class="t"><span class="src-tag '+(MEDIA_CLS[m.src]||'s-weixin')+'">'+esc(m.src)+'</span>'+esc(m.t)+'</div>'+
+    '<div class="s">'+esc(m.s||'')+'</div></div><button class="icon-btn" onclick="delMedia(\''+m.id+'\')">×</button></div>'
+  ).join('')||'<div class="empty-guide">还没有记录 · 在下面加一条</div>';
+
+  $('moodList').innerHTML=D.moods.map(m=>
+    '<div class="heat-row"><div class="heat-meta"><div class="t"><span class="src-tag '+(MOOD_CLS[m.p]||'s-jiemian')+'">'+esc(m.p)+'</span>'+esc(m.t)+'</div>'+
+    '<div class="s">情绪词：'+esc(m.w||'—')+'</div></div><button class="icon-btn" onclick="delMood(\''+m.id+'\')">×</button></div>'
+  ).join('')||'<div class="empty-guide">还没有记录 · 在下面加一条</div>';
+
+  const cnt={};D.moods.forEach(m=>{if(m.w)cnt[m.w]=(cnt[m.w]||0)+1;});
+  const words=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
+  $('wordCloud').innerHTML=words.length?words.map((w,i)=>'<span class="wc'+(i<2?' big':i<5?' mid':'')+'">'+esc(w)+'</span>').join(''):'<span class="muted" style="font-size:11.5px">填了情绪词，这里会自动长出词云</span>';
+
+  $('calList').innerHTML=D.cal.slice().sort((a,b)=>(a.d||'').localeCompare(b.d||'')).map(c=>
+    '<div class="cal-item"><div class="cal-date">'+esc(c.d||'')+'</div><div class="cal-body"><div class="ct">'+esc(c.t)+'</div>'+
+    '<div class="cs">'+esc(c.c||'')+'</div></div><button class="icon-btn" onclick="delCal(\''+c.id+'\')">×</button></div>'
+  ).join('')||'<div class="empty-guide">还没有记录 · 在下面加一条</div>';
+}
+function addMedia(){const t=v('md_t');if(!t)return;D.media.unshift({id:uid(),src:$('md_src').value,t,s:v('md_s')});$('md_t').value='';$('md_s').value='';save();renderSources();}
+function delMedia(id){D.media=D.media.filter(x=>x.id!=id);save();renderSources();}
+function addMood(){const t=v('mo_t');if(!t)return;D.moods.unshift({id:uid(),p:$('mo_p').value,t,w:v('mo_w')});$('mo_t').value='';$('mo_w').value='';save();renderSources();}
+function delMood(id){D.moods=D.moods.filter(x=>x.id!=id);save();renderSources();}
+function addCal(){const t=v('ca_t');if(!t)return;D.cal.push({id:uid(),d:v('ca_d'),t,c:v('ca_c')});['ca_d','ca_t','ca_c'].forEach(i=>$(i).value='');save();renderSources();}
+function delCal(id){D.cal=D.cal.filter(x=>x.id!=id);save();renderSources();}
+
+/* ---------- 潜力主播雷达（手动录入） ---------- */
+const POT_PILL={'建议关注':'p-teal','可加热':'p-blue','观察':'p-gray'};
+function renderPot(){
+  $('potList').innerHTML=D.potentials.map(p=>
+    '<div class="heat-row"><div class="heat-meta"><div class="t">@'+esc(p.name)+'</div><div class="s">'+esc(p.cat||'')+' · '+esc(p.note||'')+'</div></div>'+
+    '<span class="pill '+(POT_PILL[p.tag]||'p-gray')+'">'+esc(p.tag||'观察')+'</span>'+
+    '<button class="icon-btn" onclick="delPot(\''+p.id+'\')">×</button></div>'
+  ).join('')||'<div class="empty-guide">还没有记 · 在下面加一位</div>';
+}
+function addPot(){const n=v('pt_name');if(!n)return;
+  D.potentials.unshift({id:uid(),name:n,cat:$('pt_cat').value,note:v('pt_note'),tag:$('pt_tag').value});
+  ['pt_name','pt_note'].forEach(i=>$(i).value='');save();renderPot();}
+function delPot(id){D.potentials=D.potentials.filter(x=>x.id!=id);save();renderPot();}
+
+/* ---------- 自己的热点备忘 ---------- */
+function renderMemos(){
+  $('memoList').innerHTML=D.memos.map(m=>'<div class="memo-item"><div class="dot"></div><div class="mt">'+esc(m.text)+
+    '<div class="ms">来源：'+esc(m.src)+'</div></div><button class="icon-btn" onclick="delMemo(\''+m.id+'\')">×</button></div>').join('')||'<div class="empty">还没有备忘</div>';
+}
+function addMemo(){const t=v('memoText');if(!t)return;D.memos.unshift({id:uid(),text:t,src:$('memoSrc').value});$('memoText').value='';save();renderMemos();}
+function delMemo(id){D.memos=D.memos.filter(m=>m.id!=id);save();renderMemos();}
+
+/* ---------- 加热记录 ---------- */
+function renderHeats(){
+  $('heatBody').innerHTML=D.heats.map(h=>{
+    const inc=h.after-h.before,pct=h.before>0?((inc/h.before)*100).toFixed(0)+'%':'—';
+    return '<tr><td>'+h.date+'</td><td><div class="row-title">'+esc(h.ep)+'</div><div class="row-sub">'+esc(h.show)+'</div></td>'+
+      '<td><span class="pill p-blue">'+esc(h.cat)+'</span></td><td>'+esc(h.slot)+'</td>'+
+      '<td>'+fmt(h.before)+'</td><td>'+fmt(h.after)+'</td><td class="up">'+pct+'</td>'+
+      '<td>'+esc(h.finish||'—')+'</td><td>'+esc(h.subs||'—')+'</td><td>'+esc(h.cmts||'—')+'</td>'+
+      '<td class="muted">'+esc(h.note||'—')+'</td><td><button class="icon-btn" onclick="delHeat(\''+h.id+'\')">×</button></td></tr>';
+  }).join('')||'<tr><td colspan="12" class="empty">还没有记录</td></tr>';
+  let total=0,sum=0;
+  D.heats.forEach(h=>{total+=(h.after-h.before);if(h.before>0)sum+=(h.after-h.before)/h.before;});
+  $('heatCount').textContent=D.heats.length;$('heatTotal').textContent='+'+fmt(total);
+  $('heatAvg').textContent=D.heats.length?(sum/D.heats.length*100).toFixed(0)+'%':'0%';
+  $('heatWeek').textContent=D.heats.filter(h=>{const d=new Date(h.date),n=new Date();return !isNaN(d)&&(n-d)/864e5<=7;}).length;
+  $('sHeat').textContent=D.heats.length;
+}
+function addHeat(){
+  const ep=v('h_ep'),show=v('h_show'),b=+v('h_before'),a=+v('h_after');
+  if(!ep||!show||!b||!a){alert('单集 / 节目 / 加热前后 PV 都要填');return;}
+  D.heats.unshift({id:uid(),date:v('h_date')||new Date().toISOString().slice(0,10),ep,show,cat:$('h_cat').value,
+    slot:$('h_slot').value,before:b,after:a,note:v('h_note'),finish:v('h_finish'),subs:v('h_subs'),cmts:v('h_cmts')});
+  ['h_ep','h_show','h_before','h_after','h_note','h_finish','h_subs','h_cmts'].forEach(i=>$(i).value='');
+  save();renderHeats();
+}
+function delHeat(id){D.heats=D.heats.filter(h=>h.id!=id);save();renderHeats();}
+
+/* ---------- 创作者运营：诊断反馈单 + 选题建议卡 ---------- */
+const FBSTATUS=['已发送','待采纳','已采纳','未采纳','讨论中'];
+const PUSHSTATUS=['待接单','选题确认','录制中','已交片','待回复'];
+function renderCreator(){
+  $('fbList').innerHTML=D.fbs.map(f=>
+    '<div class="ticket"><div class="tt">@'+esc(f.who)+'：'+esc(f.text)+'</div>'+
+    '<div class="ts">'+esc(f.status)+' · '+(f.good?'已填诊断单':'未填')+'</div>'+
+    '<div class="flex" style="margin-top:6px">'+
+    '<select style="font-size:11px;padding:2px 6px;border:1px solid var(--line);border-radius:6px" onchange="setFb(\''+f.id+'\',this.value)">'+
+    FBSTATUS.map(s=>'<option'+(s===f.status?' selected':'')+'>'+s+'</option>').join('')+'</select>'+
+    '<button class="btn sm" onclick="openFb(\''+f.id+'\')">诊断单</button>'+
+    '<button class="btn sm" onclick="copyFb(\''+f.id+'\')">复制</button>'+
+    '<button class="icon-btn" onclick="delFb(\''+f.id+'\')">×</button></div></div>').join('')||'<div class="empty">暂无反馈</div>';
+  $('fbCount').textContent=D.fbs.length;
+
+  $('pushList').innerHTML=D.pushes.map(p=>
+    '<div class="ticket"><div class="tt">'+esc(p.topic)+' → @'+esc(p.who)+'</div>'+
+    '<div class="ts">'+esc(p.status)+(p.due?' · 截止 '+esc(p.due):'')+' · '+(p.angle?'已填建议卡':'未填')+'</div>'+
+    '<div class="flex" style="margin-top:6px">'+
+    '<select style="font-size:11px;padding:2px 6px;border:1px solid var(--line);border-radius:6px" onchange="setPush(\''+p.id+'\',this.value)">'+
+    PUSHSTATUS.map(s=>'<option'+(s===p.status?' selected':'')+'>'+s+'</option>').join('')+'</select>'+
+    '<button class="btn sm" onclick="openPush(\''+p.id+'\')">选题卡</button>'+
+    '<button class="btn sm" onclick="copyPush(\''+p.id+'\')">复制</button>'+
+    '<button class="icon-btn" onclick="delPush(\''+p.id+'\')">×</button></div></div>').join('')||'<div class="empty">暂无 push</div>';
+  $('pushCount').textContent=D.pushes.length;
+
+  $('crBody').innerHTML=D.creators.map(c=>'<tr><td class="row-title">'+esc(c.name)+'</td><td><span class="pill p-blue">'+esc(c.cat)+'</span></td>'+
+    '<td>'+esc(c.subs)+'</td><td class="up">'+esc(c.growth)+'</td><td>'+esc(c.next||'—')+'</td>'+
+    '<td><button class="icon-btn" onclick="delCr(\''+c.id+'\')">×</button></td></tr>').join('')||'<tr><td colspan="6" class="empty">还没有记录 · 在下面加一位你负责的主播</td></tr>';
+}
+function addFb(){const w=v('fb_who'),t=v('fb_text');if(!w||!t)return;D.fbs.unshift({id:uid(),who:w,text:t,status:'已发送',good:'',problem:'',suggest:'',prio:'中'});$('fb_who').value='';$('fb_text').value='';save();renderCreator();}
+function setFb(id,val){const f=D.fbs.find(x=>x.id==id);if(f){f.status=val;save();renderCreator();}}
+function delFb(id){D.fbs=D.fbs.filter(f=>f.id!=id);save();renderCreator();}
+function openFb(id){
+  const f=D.fbs.find(x=>x.id==id);if(!f)return;
+  openModal('<h3>🩺 诊断反馈单 · @'+esc(f.who)+'</h3>'+
+    '<div class="mrow"><input id="fb_g" placeholder="优点 / 做得好的地方" value="'+esc(f.good||'')+'"></div>'+
+    '<div class="mrow"><input id="fb_p" placeholder="问题 / 卡点" value="'+esc(f.problem||'')+'"></div>'+
+    '<div class="mrow"><textarea id="fb_s" placeholder="修改建议（具体可执行）">'+esc(f.suggest||'')+'</textarea></div>'+
+    '<div class="mrow"><input id="fb_pr" placeholder="优先级 高/中/低" value="'+esc(f.prio||'')+'">'+
+    '<input id="fb_st" placeholder="状态" value="'+esc(f.status||'')+'"></div>'+
+    '<div class="flex"><button class="btn primary" onclick="saveFb(\''+id+'\')">保存</button>'+
+    '<button class="btn" onclick="copyFb(\''+id+'\')">复制单据</button>'+
+    '<button class="btn" onclick="closeModal()">关闭</button></div>'+
+    '<div class="preview">'+esc(fbText(f)).replace(/\n/g,'<br>')+'</div>');
+}
+function saveFb(id){const f=D.fbs.find(x=>x.id==id);if(!f)return;
+  f.good=v('fb_g');f.problem=v('fb_p');f.suggest=v('fb_s');f.prio=v('fb_pr');f.status=v('fb_st')||f.status;
+  save();closeModal();renderCreator();}
+function fbText(f){return '【单集诊断反馈单】@'+f.who+'\n一句话：'+f.text+'\n\n优点：'+(f.good||'—')+'\n问题：'+(f.problem||'—')+'\n建议：'+(f.suggest||'—')+'\n优先级：'+(f.prio||'—')+'\n状态：'+(f.status||'—');}
+function copyFb(id){const f=D.fbs.find(x=>x.id==id);if(f)copyText(fbText(f));}
+
+function addPush(){const t=v('pu_topic'),w=v('pu_who');if(!t||!w)return;
+  D.pushes.unshift({id:uid(),topic:t,who:w,status:'待接单',angle:'',hostType:'',ref:'',due:''});$('pu_topic').value='';$('pu_who').value='';save();renderCreator();}
+function setPush(id,val){const p=D.pushes.find(x=>x.id==id);if(p){p.status=val;save();renderCreator();}}
+function delPush(id){D.pushes=D.pushes.filter(p=>p.id!=id);save();renderCreator();}
+function openPush(id){
+  const p=D.pushes.find(x=>x.id==id);if(!p)return;
+  openModal('<h3>🎯 选题建议卡 · '+esc(p.topic)+'</h3>'+
+    '<div class="mrow"><input id="pu_w" placeholder="指派主播 @xxx" value="'+esc(p.who||'')+'"></div>'+
+    '<div class="mrow"><textarea id="pu_a" placeholder="切入视角：从哪个角度讲（避免和别人撞）">'+esc(p.angle||'')+'</textarea></div>'+
+    '<div class="mrow"><input id="pu_h" placeholder="推荐主播类型，如：社会议题型、有观点输出能力" value="'+esc(p.hostType||'')+'"></div>'+
+    '<div class="mrow"><input id="pu_r" placeholder="参考灵感 / 素材" value="'+esc(p.ref||'')+'">'+
+    '<input id="pu_d" placeholder="截止时间 06-19" value="'+esc(p.due||'')+'"></div>'+
+    '<div class="flex"><button class="btn primary" onclick="savePush(\''+id+'\')">保存</button>'+
+    '<button class="btn" onclick="copyPush(\''+id+'\')">复制卡片</button>'+
+    '<button class="btn" onclick="closeModal()">关闭</button></div>'+
+    '<div class="preview">'+esc(pushText(p)).replace(/\n/g,'<br>')+'</div>');
+}
+function savePush(id){const p=D.pushes.find(x=>x.id==id);if(!p)return;
+  p.who=v('pu_w');p.angle=v('pu_a');p.hostType=v('pu_h');p.ref=v('pu_r');p.due=v('pu_d');
+  save();closeModal();renderCreator();}
+function pushText(p){return '【选题建议卡】'+p.topic+'\n指派：@'+p.who+'\n\n切入视角：'+(p.angle||'—')+'\n推荐主播类型：'+(p.hostType||'—')+'\n参考灵感：'+(p.ref||'—')+'\n截止时间：'+(p.due||'—')+'\n状态：'+(p.status||'—');}
+function copyPush(id){const p=D.pushes.find(x=>x.id==id);if(p)copyText(pushText(p));}
+function addCr(){const n=v('cr_name');if(!n)return;
+  D.creators.push({id:uid(),name:n,cat:$('cr_cat').value,subs:v('cr_subs')||'—',growth:v('cr_growth')||'—',next:v('cr_next')||'待定'});
+  ['cr_name','cr_subs','cr_growth','cr_next'].forEach(i=>$(i).value='');save();renderCreator();}
+function delCr(id){D.creators=D.creators.filter(c=>c.id!=id);save();renderCreator();}
+
+/* ---------- 专题合集&投放：卖点卡 ---------- */
+function renderCollection(){
+  $('colBody').innerHTML=D.cols.map(c=>
+    '<tr><td class="row-title">'+esc(c.name)+'</td><td>'+esc(c.eps)+'</td><td>'+esc(c.slot)+'</td>'+
+    '<td><span class="pill '+(c.status==='待认领'?'p-amber':c.status==='已排期'?'p-teal':'p-gray')+'">'+esc(c.status)+'</span></td>'+
+    '<td>'+(c.reason?'<span class="pill p-teal">已写</span>':'<span class="pill p-gray">待写</span>')+'</td>'+
+    '<td><button class="btn sm" onclick="openPitch(\''+c.id+'\')">卖点卡</button> '+
+    '<button class="icon-btn" onclick="delCol(\''+c.id+'\')">×</button></td></tr>').join('')||'<tr><td colspan="6" class="empty">暂无</td></tr>';
+  $('effBody').innerHTML=D.effs.map(e=>'<tr><td class="row-title">'+esc(e.name)+'</td><td>'+esc(e.exp)+'</td><td class="up">'+esc(e.conv)+'</td>'+
+    '<td><button class="icon-btn" onclick="delEff(\''+e.id+'\')">×</button></td></tr>').join('')||'<tr><td colspan="4" class="empty">暂无</td></tr>';
+}
+function addCol(){const n=v('c_name');if(!n)return;
+  D.cols.unshift({id:uid(),name:n,eps:v('c_eps')||'—',slot:$('c_slot').value,status:$('c_status').value,aud:'',reason:'',pain:'',quote:''});
+  $('c_name').value='';$('c_eps').value='';save();renderCollection();}
+function delCol(id){D.cols=D.cols.filter(c=>c.id!=id);save();renderCollection();}
+function addEff(){const n=v('e_name');if(!n)return;D.effs.unshift({id:uid(),name:n,exp:v('e_exp')||'—',conv:v('e_conv')||'—'});
+  ['e_name','e_exp','e_conv'].forEach(i=>$(i).value='');save();renderCollection();}
+function delEff(id){D.effs=D.effs.filter(e=>e.id!=id);save();renderCollection();}
+function openPitch(id){
+  const c=D.cols.find(x=>x.id==id);if(!c)return;
+  openModal('<h3>📇 投放卖点卡 · '+esc(c.name)+'</h3>'+
+    '<div class="mrow"><input id="pi_r" placeholder="推荐理由：这集为什么值得推" value="'+esc(c.reason||'')+'"></div>'+
+    '<div class="mrow"><input id="pi_a" placeholder="适合受众：推给谁看" value="'+esc(c.aud||'')+'"></div>'+
+    '<div class="mrow"><input id="pi_p" placeholder="受众痛点：他们此刻在焦虑什么" value="'+esc(c.pain||'')+'"></div>'+
+    '<div class="mrow"><input id="pi_q" placeholder="宣传金句：可直接做文案的那句" value="'+esc(c.quote||'')+'"></div>'+
+    '<div class="flex"><button class="btn primary" onclick="savePitch(\''+id+'\')">保存</button>'+
+    '<button class="btn" onclick="copyPitch(\''+id+'\')">复制卖点卡</button>'+
+    '<button class="btn" onclick="closeModal()">关闭</button></div>'+
+    '<div class="preview">'+esc(pitchText(c)).replace(/\n/g,'<br>')+'</div>');
+}
+function savePitch(id){const c=D.cols.find(x=>x.id==id);if(!c)return;
+  c.reason=v('pi_r');c.aud=v('pi_a');c.pain=v('pi_p');c.quote=v('pi_q');save();closeModal();renderCollection();}
+function pitchText(c){return '【投放卖点卡】'+c.name+'\n推荐位：'+c.slot+' · '+c.eps+'\n\n推荐理由：'+(c.reason||'—')+'\n适合受众：'+(c.aud||'—')+'\n受众痛点：'+(c.pain||'—')+'\n宣传金句：'+(c.quote||'—');}
+function copyPitch(id){const c=D.cols.find(x=>x.id==id);if(c)copyText(pitchText(c));}
+
+/* ---------- 灵感库 ---------- */
+let fSrc='全部',fTopic='全部',fAttr='全部';
+function allTags(k){const s=new Set();D.insp.forEach(i=>(i[k]||[]).forEach(t=>s.add(t)));return [...s].sort();}
+function renderInsp(){
+  const srcs=['全部','公众号','书籍','小红书','抖音','播客','长视频','媒体'];
+  $('inspChips').innerHTML=srcs.map(s=>{const n=s==='全部'?D.insp.length:D.insp.filter(i=>i.src===s).length;
+    return '<button class="chip'+(fSrc===s?' on':'')+'" onclick="setF(\'src\',\''+s+'\')">'+s+' '+n+'</button>';}).join('');
+  const tp=allTags('topics'),at=allTags('attrs');
+  $('topicChips').innerHTML=['全部'].concat(tp).map(s=>'<button class="chip'+(fTopic===s?' on':'')+'" onclick="setF(\'topic\',\''+s+'\')">'+esc(s)+'</button>').join('');
+  $('attrChips').innerHTML=['全部'].concat(at).map(s=>'<button class="chip'+(fAttr===s?' on':'')+'" onclick="setF(\'attr\',\''+s+'\')">'+esc(s)+'</button>').join('');
+  const list=D.insp.filter(i=>(fSrc==='全部'||i.src===fSrc)&&(fTopic==='全部'||(i.topics||[]).includes(fTopic))&&(fAttr==='全部'||(i.attrs||[]).includes(fAttr)));
+  $('inspList').innerHTML=list.map(i=>
+    '<div class="card insp-card">'+
+    '<div class="insp-src" style="color:'+(SRCCOLOR[i.src]||'#5f7488')+'">'+esc(i.src)+' · '+esc(i.from||'')+'</div>'+
+    '<div class="insp-quote">'+esc(i.quote)+'</div>'+
+    '<div class="insp-note">'+esc(i.note||'')+'</div>'+
+    '<div class="flex wrap">'+(i.topics||[]).map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+
+    (i.attrs||[]).map(t=>'<span class="tag attr">'+esc(t)+'</span>').join('')+'</div>'+
+    '<div class="flex"><button class="btn sm" onclick="openInspToPush(\''+i.id+'\')">转选题卡</button>'+
+    '<button class="icon-btn" onclick="delInsp(\''+i.id+'\')">×</button></div></div>').join('')||'<div class="empty">'+(D.insp.length?'没有符合条件的摘抄':'还没有摘抄 · 用上面的表单存第一条')+'</div>';
+}
+function setF(k,s){if(k==='src')fSrc=s;if(k==='topic')fTopic=s;if(k==='attr')fAttr=s;renderInsp();}
+function addInsp(){
+  const q=v('i_quote');if(!q)return;
+  const sp=s=>s.split(/[,，#\s]+/).map(x=>x.trim()).filter(Boolean);
+  D.insp.unshift({id:uid(),src:$('i_src').value,from:v('i_from'),cat:$('i_cat').value,quote:q,note:v('i_note'),topics:sp(v('i_topics')),attrs:sp(v('i_attrs'))});
+  ['i_from','i_quote','i_note','i_topics','i_attrs'].forEach(i=>$(i).value='');save();renderInsp();
+}
+function delInsp(id){D.insp=D.insp.filter(i=>i.id!=id);save();renderInsp();}
+function openInspToPush(id){
+  const i=D.insp.find(x=>x.id==id);if(!i)return;
+  openModal('<h3>🔁 灵感 → 选题建议卡</h3>'+
+    '<div class="preview">'+esc(i.quote)+'</div>'+
+    '<div class="mrow" style="margin-top:10px"><input id="it_t" value="'+esc(i.quote.slice(0,14))+'" placeholder="选题标题"></div>'+
+    '<div class="mrow"><input id="it_a" value="'+esc(i.note||'')+'" placeholder="切入视角"></div>'+
+    '<div class="mrow"><input id="it_h" placeholder="推荐主播类型"></div>'+
+    '<div class="mrow"><input id="it_w" placeholder="指派主播 @xxx" value="待指派">'+
+    '<input id="it_d" placeholder="截止时间"></div>'+
+    '<div class="flex"><button class="btn primary" onclick="saveInspToPush(\''+id+'\')">生成选题卡</button>'+
+    '<button class="btn" onclick="closeModal()">关闭</button></div>');
+}
+function saveInspToPush(id){
+  const i=D.insp.find(x=>x.id==id);if(!i)return;
+  D.pushes.unshift({id:uid(),topic:v('it_t')||i.quote.slice(0,14),who:v('it_w')||'待指派',status:'待接单',
+    angle:v('it_a'),hostType:v('it_h'),ref:'灵感库：'+i.quote.slice(0,24),due:v('it_d')});
+  save();closeModal();renderAll();alert('已生成选题建议卡 → 创作者运营 / 反向 Push');
+}
+
+/* ---------- 复制 / 备份 ---------- */
+function copyText(txt){
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  let ok=false;try{ok=document.execCommand('copy');}catch(e){}
+  ta.remove();
+  if(!ok&&navigator.clipboard)navigator.clipboard.writeText(txt).catch(()=>{});
+  alert('已复制，可直接粘贴到微信 / 文档');
+}
+function exportData(){
+  try{
+    const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download='至尊咪备份_'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }catch(e){alert('导出失败：'+e.message);}
+}
+function importData(file){
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const o=JSON.parse(r.result);
+    if(!o||typeof o!=='object'||!Array.isArray(o.todos))throw new Error('结构不符');
+    if(!confirm('导入将替换当前这台设备上的全部数据。\n建议先点「⬇ 导出」留一份备份。确定继续吗？'))return;
+    D=Object.assign(JSON.parse(JSON.stringify(DEFAULT)),o);
+    KEYS.forEach(k=>{if(!Array.isArray(D[k]))D[k]=[];});
+    if(!D.kanban||typeof D.kanban!=='object')D.kanban=JSON.parse(JSON.stringify(DEFAULT.kanban));
+    save();renderAll();alert('导入成功：待办 '+D.todos.length+' · 热点 '+D.hotspots.length+' · 加热 '+D.heats.length+' · 灵感 '+D.insp.length);
+  }catch(e){alert('这个文件读不了，请选择本工具「⬇ 导出」生成的 JSON。\n（'+e.message+'）');}};
+  r.onerror=()=>alert('文件读取失败');
+  r.readAsText(file);
+}
+
+/* ---------- 通用 ---------- */
+function renderKanban(){
+  const cols=[['sift','待初筛'],['high','高潜'],['heated','已加热'],['sent','已推送放']];
+  $('kanban').innerHTML=cols.map(c=>'<div class="col"><h4>'+c[1]+' <span class="count">'+D.kanban[c[0]].length+'</span></h4>'+
+    D.kanban[c[0]].map(k=>'<div class="ticket"><div class="tt">'+esc(k.t)+'</div><div class="ts">'+esc(k.d)+'</div>'+
+      '<button class="icon-btn" onclick="delKanban(\''+c[0]+'\',\''+k.id+'\')">×</button></div>').join('')+
+    (D.kanban[c[0]].length?'':'<div class="empty-guide">空</div>')+
+    '<div class="form-row" style="margin-top:6px"><input id="k_'+c[0]+'" placeholder="+ 加卡片"><button class="btn sm" onclick="addKanban(\''+c[0]+'\')">+</button></div></div>').join('');
+}
+function addKanban(col){const x=v('k_'+col);if(!x)return;D.kanban[col].push({id:uid(),t:x,d:'手动添加'});save();renderKanban();}
+function delKanban(col,id){D.kanban[col]=D.kanban[col].filter(k=>k.id!=id);save();renderKanban();}
+
+function renderStats(){$('sCollab').textContent=D.fbs.length+D.cols.filter(c=>c.status==='待认领').length;}
+const KEYS=['todos','memos','hotspots','heats','insp','fbs','pushes','creators','potentials','cols','effs','media','moods','cal'];
+function renderAll(){renderTodos();renderHotspots();renderSources();renderMemos();renderHeats();renderCreator();renderPot();renderCollection();renderInsp();renderKanban();renderStats();}
+
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const vw=el.dataset.view;
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+    $('view-'+vw).classList.add('active');
+    $('viewTitle').textContent={memorial:'批奏折',radar:'天津站情报处',creator:'创作者运营',collection:'专题合集&投放',heat:'加热记录',inspiration:'我的灵感库'}[vw];
+    document.querySelector('.content').scrollTop=0;
+  });
+});
+$('today').textContent=new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit',weekday:'short'});
+$('h_date').value=new Date().toISOString().slice(0,10);
+renderAll();
+</script>
+</body>
+</html>
