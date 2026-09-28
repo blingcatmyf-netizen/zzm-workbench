@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="至尊咪" />
 <meta name="theme-color" content="#0d3b5c" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%90%B1%3C/text%3E%3C/svg%3E" />
 <title>至尊咪 · 咪也要上班</title>
 <style>
   :root{
@@ -239,8 +240,16 @@
     <svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 17h5"/></svg>
     我的灵感库
   </div>
+  <div class="nav-item" data-view="account">
+    <svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+    咪牌内容作坊<span class="nav-tag" id="tagAcct">0</span>
+  </div>
+  <div class="nav-item" data-view="plan">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2.2"/></svg>
+    Let's 显化
+  </div>
 
-  <div class="side-foot">数据存在本机浏览器<br/>记得偶尔「导出」备份</div>
+  <div class="side-foot">数据存在本机浏览器<br/>记得偶尔「导出」备份<br/><span id="verTag" style="opacity:.7"></span></div>
 </aside>
 
 <main class="main">
@@ -558,7 +567,7 @@
           <li><b>摘你自己的</b>：看公众号、书籍、小红书、抖音、播客、长视频时，那句打动你的话、那段出色的书写——存进来。</li>
           <li><b>双层标签</b>：<b>议题标签</b>（附近消失 / 精神内耗 / 历史镜像 / 职场延展…）管「讲什么」，<b>属性标签</b>（金句 / 独到观点 / 案例 / 情绪共鸣）管「是什么」。三行筛选可叠加，交叉一筛就能凑出一个专题。</li>
           <li><b>写批注</b>：记下「可延展成什么选题」，未来的你会感谢现在的你。</li>
-          <li><b>一键转选题卡</b>：某条摘抄想做了，点「转选题卡」直接生成建议卡推给主播。</li>
+          <li><b>一键转选题卡</b>：某条摘抄想做了，点「转选题卡」直接生成建议卡推给主播；想自己发账号就点「→咪牌作坊」。</li>
           <li><b>和情报处的分工</b>：别人的标题、人物稿思路 → 情报处·热点档案；打动你的句子 → 这里。档案里点「存灵感」会把内容送过来。</li>
         </ul>
       </div>
@@ -587,6 +596,77 @@
       <div class="grid g-3" id="inspList" style="margin-top:12px"></div>
     </section>
 
+    <!-- ========== 咪牌内容作坊 ========== -->
+    <section class="view" id="view-account">
+      <div class="note-box">🏭 <b>咪牌内容作坊</b>：抖音 / 小红书 / 公众号的选题与规划。自家小作坊，产量随缘、存货为王——想到就先备料，别等想清楚再开工。</div>
+
+      <div class="guide">
+        <b class="t">🏭 这个作坊怎么开</b>
+        <ul>
+          <li><b>按平台备料</b>：抖音 / 小红书 / 公众号 / 播客 / 其他，想到一条就扔进来，不要求完整。</li>
+          <li><b>工序</b>：备料 → 开做 → 打磨中 → 出货。一眼看清手上还有多少存货、卡在哪道工序。</li>
+          <li><b>备注写什么</b>：形式（口播 / 图文 / 长文）、开头钩子、能复用的素材或画面。</li>
+          <li><b>和灵感库打通</b>：灵感库那条摘抄点「→咪牌作坊」，直接变成这里的备料。</li>
+          <li><b>为什么不放在「专题合集&投放」</b>：那一块是<b>公司视角</b>（写给投放团队的推荐卖点），这里是<b>你自家作坊</b>，对象和动作都不是一回事，混一起会互相干扰。</li>
+        </ul>
+      </div>
+
+      <div class="grid g-4">
+        <div class="card stat"><span class="num" id="acIdea">0</span><span class="lbl">备料</span></div>
+        <div class="card stat"><span class="num" id="acTodo">0</span><span class="lbl">开做</span></div>
+        <div class="card stat"><span class="num" id="acDoing">0</span><span class="lbl">打磨中</span></div>
+        <div class="card stat"><span class="num" id="acDone">0</span><span class="lbl">已出货</span></div>
+      </div>
+
+      <div class="card" style="margin-top:16px"><h3>🏭 咪牌内容作坊 · 选题 & 规划</h3>
+        <div class="form-row">
+          <select id="a_plat" class="w-sm"><option>抖音</option><option>小红书</option><option>公众号</option><option>播客</option><option>其他</option></select>
+          <input id="a_title" placeholder="选题 / 想做的方向，如：年终读书盘点 · 第一视角口播" />
+          <select id="a_status" class="w-sm"><option>备料</option><option>开做</option><option>打磨中</option><option>出货</option></select>
+          <input id="a_note" class="w-md" placeholder="备注：形式/钩子/素材" />
+          <button class="btn primary sm" onclick="addAcct()">+</button>
+        </div>
+        <div class="sub-h">按平台</div><div class="flex wrap" id="acPlatChips"></div>
+        <div class="sub-h">按状态</div><div class="flex wrap" id="acStatChips"></div>
+        <div id="acList" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- ========== 长期规划 & 备忘 ========== -->
+    <section class="view" id="view-plan">
+      <div class="note-box">✨ <b>Let's 显化</b>：年终读书内容、年终播客这类内容规划；红酒考证这类学习计划；买纸质吸管这类生活琐事——写下来就会开始发生，脑子不用再替它们占内存。</div>
+
+      <div class="guide">
+        <b class="t">✨ 这个板块能做什么</b>
+        <ul>
+          <li><b>三类都放得下</b>：<b>内容规划</b>（年终选题、想做的系列）、<b>学习成长</b>（考证、学一门技能、读书计划）、<b>生活备忘</b>（要买什么、要办什么事）。</li>
+          <li><b>时间节点写模糊的也行</b>：「年底」「明年春天」「2026-06」都可以——这里不是日历，是给自己一个先后感。</li>
+          <li><b>显化进度</b>：许愿 → 显化中 → 已显化；暂时不做的丢进「交给宇宙」——不是放弃，是「现在不做，但别忘」。</li>
+          <li><b>怎么用</b>：想到的时候随手许一个愿；每周扫一次，把「许愿」里挑一条推进成「显化中」就行。</li>
+        </ul>
+      </div>
+
+      <div class="grid g-4">
+        <div class="card stat"><span class="num" id="plIdea">0</span><span class="lbl">许愿中</span></div>
+        <div class="card stat"><span class="num" id="plDoing">0</span><span class="lbl">显化中</span></div>
+        <div class="card stat"><span class="num" id="plDone">0</span><span class="lbl">已显化</span></div>
+        <div class="card stat"><span class="num" id="plNode">0</span><span class="lbl">有节点待办</span></div>
+      </div>
+
+      <div class="card" style="margin-top:16px"><h3>✨ Let's 显化 · 长期规划 & 备忘</h3>
+        <div class="form-row">
+          <select id="p_type" class="w-sm"><option>内容规划</option><option>学习成长</option><option>生活备忘</option></select>
+          <input id="p_text" placeholder="要做什么，如：年底发布年终读书内容 / 学习红酒知识考证 / 买纸质吸管" />
+          <input id="p_when" class="w-sm" placeholder="时间节点：年底" />
+          <select id="p_status" class="w-sm"><option>许愿</option><option>显化中</option><option>已显化</option><option>交给宇宙</option></select>
+          <button class="btn primary sm" onclick="addPlan()">+</button>
+        </div>
+        <div class="sub-h">按类型</div><div class="flex wrap" id="plTypeChips"></div>
+        <div class="sub-h">按状态</div><div class="flex wrap" id="plStatChips"></div>
+        <div id="plList" style="margin-top:12px"></div>
+      </div>
+    </section>
+
   </div>
 </main>
 </div>
@@ -598,6 +678,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const KEY='zym_data_v3';
+const VER='v1.2 · 09-28';
 const uid=()=>Date.now()+Math.random().toString(36).slice(2,6);
 const esc=s=>(s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('zh-CN');
@@ -619,10 +700,20 @@ const DEFAULT={
   media:[],   // 主流/深度媒体追踪
   moods:[],   // 泛社会情绪监测
   cal:[],     // 文化/学术出版日历
+  accts:[],   // 我自己账号的选题（抖音/小红书/公众号）
+  plans:[],   // 长期规划 & 备忘
   kanban:{sift:[],high:[],heated:[],sent:[]}
 };
 
 let D=(()=>{try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT));})();
+/* 状态词改名后的老数据兼容（v1.1 → v1.2） */
+(()=>{const AC={'灵感':'备料','待做':'开做','制作中':'打磨中','已发布':'出货'},
+ PL={'想法':'许愿','进行中':'显化中','已完成':'已显化','搁置':'交给宇宙'};let ch=false;
+ (D.accts||[]).forEach(x=>{if(AC[x.status]){x.status=AC[x.status];ch=true;}});
+ (D.plans||[]).forEach(x=>{if(PL[x.status]){x.status=PL[x.status];ch=true;}});
+ if(!D.kanban||typeof D.kanban!=='object')D.kanban={sift:[],high:[],heated:[],sent:[]};
+ ['sift','high','heated','sent'].forEach(k=>{if(!Array.isArray(D.kanban[k]))D.kanban[k]=[];});
+ if(ch){try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){}}})();
 const save=()=>localStorage.setItem(KEY,JSON.stringify(D));
 const SRCCOLOR={'书籍':'#1d4ed8','公众号':'#0d9488','小红书':'#2563eb','抖音':'#0f766e','播客':'#0284c7','长视频':'#0e7490','媒体':'#3730a3'};
 
@@ -936,6 +1027,7 @@ function renderInsp(){
     '<div class="flex wrap">'+(i.topics||[]).map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+
     (i.attrs||[]).map(t=>'<span class="tag attr">'+esc(t)+'</span>').join('')+'</div>'+
     '<div class="flex"><button class="btn sm" onclick="openInspToPush(\''+i.id+'\')">转选题卡</button>'+
+    '<button class="btn sm" onclick="openInspToAcct(\''+i.id+'\')">→咪牌作坊</button>'+
     '<button class="icon-btn" onclick="delInsp(\''+i.id+'\')">×</button></div></div>').join('')||'<div class="empty">'+(D.insp.length?'没有符合条件的摘抄':'还没有摘抄 · 用上面的表单存第一条')+'</div>';
 }
 function setF(k,s){if(k==='src')fSrc=s;if(k==='topic')fTopic=s;if(k==='attr')fAttr=s;renderInsp();}
@@ -965,6 +1057,82 @@ function saveInspToPush(id){
   save();closeModal();renderAll();alert('已生成选题建议卡 → 创作者运营 / 反向 Push');
 }
 
+/* ---------- 咪牌内容作坊（抖音/小红书/公众号） ---------- */
+const AC_PLAT_CLS={'抖音':'s-nanfang','小红书':'s-pengpai','公众号':'s-weixin','播客':'s-zhihu','其他':'s-jiemian'};
+const AC_ST_PILL={'备料':'p-gray','开做':'p-amber','打磨中':'p-blue','出货':'p-teal'};
+const AC_PLATS=['抖音','小红书','公众号','播客','其他'], AC_STS=['备料','开做','打磨中','出货'];
+let fAcPlat='全部',fAcSt='全部';
+function renderAcct(){
+  const n=s=>s==='全部'?D.accts.length:D.accts.filter(x=>x.plat===s).length;
+  const m=s=>s==='全部'?D.accts.length:D.accts.filter(x=>x.status===s).length;
+  $('acPlatChips').innerHTML=['全部'].concat(AC_PLATS).map(s=>'<button class="chip'+(fAcPlat===s?' on':'')+'" onclick="setAc(\'plat\',\''+s+'\')">'+s+' '+n(s)+'</button>').join('');
+  $('acStatChips').innerHTML=['全部'].concat(AC_STS).map(s=>'<button class="chip'+(fAcSt===s?' on':'')+'" onclick="setAc(\'st\',\''+s+'\')">'+s+' '+m(s)+'</button>').join('');
+  $('acIdea').textContent=D.accts.filter(x=>x.status==='备料').length;
+  $('acTodo').textContent=D.accts.filter(x=>x.status==='开做').length;
+  $('acDoing').textContent=D.accts.filter(x=>x.status==='打磨中').length;
+  $('acDone').textContent=D.accts.filter(x=>x.status==='出货').length;
+  $('tagAcct').textContent=D.accts.filter(x=>x.status!=='出货').length;
+  const list=D.accts.filter(x=>(fAcPlat==='全部'||x.plat===fAcPlat)&&(fAcSt==='全部'||x.status===fAcSt));
+  $('acList').innerHTML=list.map(x=>
+    '<div class="heat-row"><div class="heat-meta"><div class="t"><span class="src-tag '+(AC_PLAT_CLS[x.plat]||'s-jiemian')+'">'+esc(x.plat)+'</span>'+esc(x.title)+'</div>'+
+    '<div class="s">'+esc(x.note||'')+'</div></div>'+
+    '<select class="w-sm" onchange="setAcct(\''+x.id+'\',this.value)">'+AC_STS.map(s=>'<option'+(s===x.status?' selected':'')+'>'+s+'</option>').join('')+'</select>'+
+    '<span class="pill '+(AC_ST_PILL[x.status]||'p-gray')+'">'+esc(x.status)+'</span>'+
+    '<button class="icon-btn" onclick="delAcct(\''+x.id+'\')">×</button></div>').join('')
+    ||'<div class="empty">'+(D.accts.length?'没有符合条件的选题':'还没有选题 · 想到什么先在上面记一条')+'</div>';
+}
+function setAc(k,s){if(k==='plat')fAcPlat=s;else fAcSt=s;renderAcct();}
+function addAcct(){const t=v('a_title');if(!t)return;
+  D.accts.unshift({id:uid(),plat:$('a_plat').value,title:t,status:$('a_status').value,note:v('a_note')});
+  ['a_title','a_note'].forEach(i=>$(i).value='');save();renderAcct();}
+function setAcct(id,st){const x=D.accts.find(y=>y.id==id);if(x){x.status=st;save();renderAcct();}}
+function delAcct(id){D.accts=D.accts.filter(x=>x.id!=id);save();renderAcct();}
+function openInspToAcct(id){
+  const i=D.insp.find(x=>x.id==id);if(!i)return;
+  openModal('<h3>🏭 灵感 → 咪牌内容作坊</h3>'+
+    '<div class="preview">'+esc(i.quote)+'</div>'+
+    '<div class="mrow" style="margin-top:10px"><input id="ia_t" value="'+esc(i.quote.slice(0,16))+'" placeholder="选题标题"></div>'+
+    '<div class="mrow"><select id="ia_p" class="w-sm">'+AC_PLATS.map(s=>'<option>'+s+'</option>').join('')+'</select>'+
+    '<input id="ia_n" value="'+esc(i.note||'')+'" placeholder="备注：形式/钩子/素材"></div>'+
+    '<div class="flex"><button class="btn primary" onclick="saveInspToAcct(\''+id+'\')">存进咪牌作坊</button>'+
+    '<button class="btn" onclick="closeModal()">关闭</button></div>');
+}
+function saveInspToAcct(id){
+  const i=D.insp.find(x=>x.id==id);if(!i)return;
+  D.accts.unshift({id:uid(),plat:$('ia_p').value,title:v('ia_t')||i.quote.slice(0,16),status:'备料',note:v('ia_n')||('来自灵感库：'+i.quote.slice(0,20))});
+  save();closeModal();renderAll();alert('已存入「咪牌内容作坊」→ 我的台账');
+}
+
+/* ---------- 长期规划 & 备忘 ---------- */
+const PL_TYPES=['内容规划','学习成长','生活备忘'], PL_STS=['许愿','显化中','已显化','交给宇宙'];
+const PL_TYPE_CLS={'内容规划':'s-weixin','学习成长':'s-zhihu','生活备忘':'s-nanfang'};
+const PL_ST_PILL={'许愿':'p-gray','显化中':'p-amber','已显化':'p-teal','交给宇宙':'p-rose'};
+let fPlType='全部',fPlSt='全部';
+function renderPlan(){
+  const n=s=>s==='全部'?D.plans.length:D.plans.filter(x=>x.type===s).length;
+  const m=s=>s==='全部'?D.plans.length:D.plans.filter(x=>x.status===s).length;
+  $('plTypeChips').innerHTML=['全部'].concat(PL_TYPES).map(s=>'<button class="chip'+(fPlType===s?' on':'')+'" onclick="setPl(\'type\',\''+s+'\')">'+s+' '+n(s)+'</button>').join('');
+  $('plStatChips').innerHTML=['全部'].concat(PL_STS).map(s=>'<button class="chip'+(fPlSt===s?' on':'')+'" onclick="setPl(\'st\',\''+s+'\')">'+s+' '+m(s)+'</button>').join('');
+  $('plIdea').textContent=D.plans.filter(x=>x.status==='许愿').length;
+  $('plDoing').textContent=D.plans.filter(x=>x.status==='显化中').length;
+  $('plDone').textContent=D.plans.filter(x=>x.status==='已显化').length;
+  $('plNode').textContent=D.plans.filter(x=>x.when&&x.status!=='已显化').length;
+  const list=D.plans.filter(x=>(fPlType==='全部'||x.type===fPlType)&&(fPlSt==='全部'||x.status===fPlSt));
+  $('plList').innerHTML=list.map(x=>
+    '<div class="heat-row"><div class="heat-meta"><div class="t"><span class="src-tag '+(PL_TYPE_CLS[x.type]||'s-jiemian')+'">'+esc(x.type)+'</span>'+esc(x.text)+'</div>'+
+    '<div class="s">'+(x.when?'⏰ '+esc(x.when):'未定时间')+(x.note?' · '+esc(x.note):'')+'</div></div>'+
+    '<select class="w-sm" onchange="setPlan(\''+x.id+'\',this.value)">'+PL_STS.map(s=>'<option'+(s===x.status?' selected':'')+'>'+s+'</option>').join('')+'</select>'+
+    '<span class="pill '+(PL_ST_PILL[x.status]||'p-gray')+'">'+esc(x.status)+'</span>'+
+    '<button class="icon-btn" onclick="delPlan(\''+x.id+'\')">×</button></div>').join('')
+    ||'<div class="empty">'+(D.plans.length?'没有符合条件的事项':'还没有记录 · 想到什么先扔一条进来')+'</div>';
+}
+function setPl(k,s){if(k==='type')fPlType=s;else fPlSt=s;renderPlan();}
+function addPlan(){const t=v('p_text');if(!t)return;
+  D.plans.unshift({id:uid(),type:$('p_type').value,text:t,when:v('p_when'),status:$('p_status').value,note:''});
+  ['p_text','p_when'].forEach(i=>$(i).value='');save();renderPlan();}
+function setPlan(id,st){const x=D.plans.find(y=>y.id==id);if(x){x.status=st;save();renderPlan();}}
+function delPlan(id){D.plans=D.plans.filter(x=>x.id!=id);save();renderPlan();}
+
 /* ---------- 复制 / 备份 ---------- */
 function copyText(txt){
   const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
@@ -992,7 +1160,7 @@ function importData(file){
     D=Object.assign(JSON.parse(JSON.stringify(DEFAULT)),o);
     KEYS.forEach(k=>{if(!Array.isArray(D[k]))D[k]=[];});
     if(!D.kanban||typeof D.kanban!=='object')D.kanban=JSON.parse(JSON.stringify(DEFAULT.kanban));
-    save();renderAll();alert('导入成功：待办 '+D.todos.length+' · 热点 '+D.hotspots.length+' · 加热 '+D.heats.length+' · 灵感 '+D.insp.length);
+    save();renderAll();alert('导入成功：待办 '+D.todos.length+' · 热点 '+D.hotspots.length+' · 加热 '+D.heats.length+' · 灵感 '+D.insp.length+' · 账号选题 '+D.accts.length+' · 规划 '+D.plans.length);
   }catch(e){alert('这个文件读不了，请选择本工具「⬇ 导出」生成的 JSON。\n（'+e.message+'）');}};
   r.onerror=()=>alert('文件读取失败');
   r.readAsText(file);
@@ -1011,8 +1179,8 @@ function addKanban(col){const x=v('k_'+col);if(!x)return;D.kanban[col].push({id:
 function delKanban(col,id){D.kanban[col]=D.kanban[col].filter(k=>k.id!=id);save();renderKanban();}
 
 function renderStats(){$('sCollab').textContent=D.fbs.length+D.cols.filter(c=>c.status==='待认领').length;}
-const KEYS=['todos','memos','hotspots','heats','insp','fbs','pushes','creators','potentials','cols','effs','media','moods','cal'];
-function renderAll(){renderTodos();renderHotspots();renderSources();renderMemos();renderHeats();renderCreator();renderPot();renderCollection();renderInsp();renderKanban();renderStats();}
+const KEYS=['todos','memos','hotspots','heats','insp','fbs','pushes','creators','potentials','cols','effs','media','moods','cal','accts','plans'];
+function renderAll(){renderTodos();renderHotspots();renderSources();renderMemos();renderHeats();renderCreator();renderPot();renderCollection();renderInsp();renderAcct();renderPlan();renderKanban();renderStats();}
 
 document.querySelectorAll('.nav-item').forEach(el=>{
   el.addEventListener('click',()=>{
@@ -1021,11 +1189,11 @@ document.querySelectorAll('.nav-item').forEach(el=>{
     el.classList.add('active');
     document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
     $('view-'+vw).classList.add('active');
-    $('viewTitle').textContent={memorial:'批奏折',radar:'天津站情报处',creator:'创作者运营',collection:'专题合集&投放',heat:'加热记录',inspiration:'我的灵感库'}[vw];
+    $('viewTitle').textContent={memorial:'批奏折',radar:'天津站情报处',creator:'创作者运营',collection:'专题合集&投放',heat:'加热记录',inspiration:'我的灵感库',account:'咪牌内容作坊',plan:"Let's 显化"}[vw];
     document.querySelector('.content').scrollTop=0;
   });
 });
-$('today').textContent=new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit',weekday:'short'});
+$('verTag').textContent=VER;$('today').textContent=new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit',weekday:'short'});
 $('h_date').value=new Date().toISOString().slice(0,10);
 renderAll();
 </script>
