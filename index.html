@@ -726,7 +726,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const KEY='zym_data_v3';
-const VER='v1.4 · 09-29';
+const VER='v1.5 · 09-29';
 const uid=()=>Date.now()+Math.random().toString(36).slice(2,6);
 const esc=s=>(s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('zh-CN');
@@ -757,6 +757,9 @@ let D=(()=>{try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}cat
 /* 状态词改名后的老数据兼容（v1.1 → v1.2） */
 (()=>{const AC={'灵感':'备料','待做':'开做','制作中':'打磨中','已发布':'出货'},
  PL={'想法':'许愿','进行中':'显化中','已完成':'已显化','搁置':'交给宇宙'};let ch=false;
+ /* 兼容老存档：补齐后来新增的数据列，否则新板块会点不动 */
+ const KEYS0=['todos','memos','hotspots','heats','insp','fbs','pushes','creators','potentials','cols','effs','media','moods','cal','accts','plans'];
+ KEYS0.forEach(k=>{if(!Array.isArray(D[k])){D[k]=[];ch=true;}});
  (D.todos||[]).forEach(t=>{if(!t.date){t.date=todayStr();ch=true;}});
  (D.accts||[]).forEach(x=>{if(AC[x.status]){x.status=AC[x.status];ch=true;}});
  (D.plans||[]).forEach(x=>{if(PL[x.status]){x.status=PL[x.status];ch=true;}});
