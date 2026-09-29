@@ -97,7 +97,12 @@
   .ticket .tt{font-weight:600;font-size:12.5px;margin-bottom:5px}.ticket .ts{font-size:11px;color:var(--muted)}
   .note-box{background:linear-gradient(135deg,#e2f6fb,#dff7f1);border:1px solid #c6e6ee;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#1c3f52;margin-bottom:18px}
   .note-box b{color:#0b6e6a}
-  .guide{background:#fff;border:1px solid var(--line);border-left:4px solid #2563eb;border-radius:12px;padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .carry-box{background:#fff8ec;border:1px dashed #efc078;border-radius:12px;padding:12px 14px;margin:12px 0}
+  .carry-box .ch{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:#a35d09;margin-bottom:6px}
+  .carry-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px dashed #f3d7ab;font-size:12.5px;color:#6b4a1b}
+  .carry-row:first-of-type{border-top:none}
+  .carry-row .d{font-size:11px;color:#a35d09;background:#fdeccc;border-radius:6px;padding:2px 7px;font-weight:600;white-space:nowrap}
+  .carry-row .tx{flex:1}
   .guide b.t{display:flex;align-items:center;gap:7px;font-size:13px;color:#123c4f;margin-bottom:8px}
   .guide ul{margin:0;padding-left:18px}
   .guide li{font-size:12.5px;color:#3f5b6d;line-height:1.75;margin-bottom:2px}
@@ -272,7 +277,9 @@
       <div class="guide">
         <b class="t">📜 这个板块能做什么</b>
         <ul>
-          <li><b>每日 Todo 是核心</b>：写下今天要落的一笔（几点、做什么），做完打勾，勾上会盖「已批」。</li>
+          <li><b>每日 Todo 是核心，按天走</b>：每条奏折都带日期，打开看到的就是<b>今天</b>的；做完打勾，勾上盖「已批」。</li>
+          <li><b>昨天没批完的不会赖在今天</b>：它们会掉进上面那块黄色的「往日未批」，你可以点「挪到今天」单条搬，或「全部挪到今天」一次搬完——要不要接着批，你自己决定。</li>
+          <li><b>可以提前拟</b>：表单里把日期改成明天 / 后天，就是「预约」的奏折，到那天会自动出现在今日列表里。</li>
           <li><b>四个数看全局</b>：待批奏折 / 在跟热点 / 加热记录 / 待跟进协作——一眼知道今天压着什么。</li>
           <li><b>热点速览</b>：自动同步情报处的热点，不用切换也能扫一眼。</li>
           <li><b>加热池看板</b>：手动把候选单集在「待初筛 → 高潜 → 已加热 → 已推送放」四列里挪，当成你的筛选台。</li>
@@ -283,10 +290,12 @@
       <div class="card" style="border-color:#cdeae5">
         <h3>📜 今日奏折 · 每日 Todo <span class="spacer"></span><span class="pill p-amber" id="todoLeft">0 待批</span></h3>
         <div class="form-row">
+          <input id="t_date" type="date" class="w-sm" />
           <input id="t_time" class="w-sm" placeholder="时间 09:20" />
           <input id="t_text" placeholder="今天要落的一笔，如：回访 @声东击西 反馈是否采纳" />
           <button class="btn gold" onclick="addTodo()">上奏</button>
         </div>
+        <div id="todoOther"></div>
         <div id="todoList"></div>
       </div>
 
@@ -678,7 +687,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const KEY='zym_data_v3';
-const VER='v1.2 · 09-28';
+const VER='v1.3 · 09-29';
 const uid=()=>Date.now()+Math.random().toString(36).slice(2,6);
 const esc=s=>(s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('zh-CN');
@@ -709,6 +718,7 @@ let D=(()=>{try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}cat
 /* 状态词改名后的老数据兼容（v1.1 → v1.2） */
 (()=>{const AC={'灵感':'备料','待做':'开做','制作中':'打磨中','已发布':'出货'},
  PL={'想法':'许愿','进行中':'显化中','已完成':'已显化','搁置':'交给宇宙'};let ch=false;
+ (D.todos||[]).forEach(t=>{if(!t.date){t.date=todayStr();ch=true;}});
  (D.accts||[]).forEach(x=>{if(AC[x.status]){x.status=AC[x.status];ch=true;}});
  (D.plans||[]).forEach(x=>{if(PL[x.status]){x.status=PL[x.status];ch=true;}});
  if(!D.kanban||typeof D.kanban!=='object')D.kanban={sift:[],high:[],heated:[],sent:[]};
@@ -722,20 +732,35 @@ function openModal(html){$('modalBody').innerHTML=html;$('modal').classList.add(
 function closeModal(){$('modal').classList.remove('on');}
 
 /* ---------- 批奏折 / Todo ---------- */
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function renderTodos(){
-  $('todoList').innerHTML=D.todos.map(t=>
+  const today=todayStr();
+  const todayList=D.todos.filter(t=>(t.date||'')===today);
+  const other=D.todos.filter(t=>!t.done&&(t.date||'')!==today).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  $('todoOther').innerHTML=other.length?
+    '<div class="carry-box"><div class="ch">📌 往日未批 / 提前拟好 · '+other.length+' 道'+
+      '<span class="spacer"></span><button class="btn sm" onclick="carryAll()">全部挪到今天</button></div>'+
+    other.map(t=>'<div class="carry-row"><span class="d">'+((t.date||'')<today?'顺延':'预约')+' '+esc(t.date||'')+'</span>'+
+      '<span class="tx">'+esc(t.text)+'</span>'+
+      '<button class="btn sm" onclick="todoToToday(\''+t.id+'\')">挪到今天</button>'+
+      '<button class="icon-btn" onclick="delTodo(\''+t.id+'\')">×</button></div>').join('')+'</div>':'';
+  $('todoList').innerHTML=todayList.map(t=>
     '<div class="todo'+(t.done?' done':'')+'">'+
     '<input type="checkbox" class="chk" '+(t.done?'checked':'')+' onchange="toggleTodo(\''+t.id+'\')">'+
     '<div class="ttime">'+esc(t.time||'')+'</div>'+
     '<div class="ttext">'+esc(t.text)+(t.done?' <span class="stamp">已批</span>':'')+'</div>'+
     '<button class="icon-btn" onclick="delTodo(\''+t.id+'\')">×</button></div>').join('')||'<div class="empty">今日无事，可退朝。</div>';
-  const left=D.todos.filter(t=>!t.done).length;
+  const left=todayList.filter(t=>!t.done).length;
   $('todoLeft').textContent=left+' 待批';$('nbTodo').textContent=left;$('sTodo').textContent=left;
-  const tag=$('tagTodo');tag.textContent=left;tag.classList.toggle('hide',left===0);
+  const tag=$('tagTodo');tag.textContent=left+other.length;tag.classList.toggle('hide',(left+other.length)===0);
 }
-function addTodo(){const text=v('t_text');if(!text)return;D.todos.push({id:uid(),time:v('t_time'),text,done:false});$('t_time').value='';$('t_text').value='';save();renderTodos();}
+function addTodo(){const text=v('t_text');if(!text)return;
+  D.todos.push({id:uid(),date:v('t_date')||todayStr(),time:v('t_time'),text,done:false});
+  $('t_time').value='';$('t_text').value='';save();renderTodos();}
 function toggleTodo(id){const t=D.todos.find(x=>x.id==id);if(t){t.done=!t.done;save();renderTodos();}}
 function delTodo(id){D.todos=D.todos.filter(x=>x.id!=id);save();renderTodos();}
+function todoToToday(id){const t=D.todos.find(x=>x.id==id);if(t){t.date=todayStr();save();renderTodos();}}
+function carryAll(){const today=todayStr();let n=0;D.todos.forEach(t=>{if(!t.done&&(t.date||'')!==today){t.date=today;n++;}});if(n){save();renderTodos();} }
 
 /* ---------- 天津站情报处：热点档案 ---------- */
 function renderHotspots(){
@@ -806,12 +831,12 @@ function archToInsp(id,kind,xid){
 function hotToPush(id){
   const h=D.hotspots.find(x=>x.id==id);if(!h)return;
   D.pushes.unshift({id:uid(),topic:h.title,who:'待指派',status:'待接单',angle:'',hostType:'',ref:'热点档案：'+h.title,due:''});
-  D.todos.unshift({id:uid(),time:'',text:'完善「'+h.title+'」的选题建议卡（切入视角 / 推荐主播类型）',done:false});
+  D.todos.unshift({id:uid(),date:todayStr(),time:'',text:'完善「'+h.title+'」的选题建议卡（切入视角 / 推荐主播类型）',done:false});
   save();renderAll();alert('已生成选题建议卡 → 创作者运营 / 反向 Push');
 }
 function hotToHeat(id){
   const h=D.hotspots.find(x=>x.id==id);if(!h)return;
-  D.todos.unshift({id:uid(),time:'',text:'加热「'+h.title+'」相关单集，并在加热记录补效果数据',done:false});
+  D.todos.unshift({id:uid(),date:todayStr(),time:'',text:'加热「'+h.title+'」相关单集，并在加热记录补效果数据',done:false});
   save();renderAll();alert('已加入今日待办');
 }
 
@@ -1193,8 +1218,8 @@ document.querySelectorAll('.nav-item').forEach(el=>{
     document.querySelector('.content').scrollTop=0;
   });
 });
-$('verTag').textContent=VER;$('today').textContent=new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit',weekday:'short'});
-$('h_date').value=new Date().toISOString().slice(0,10);
+$('verTag').textContent=VER;$('t_date').value=todayStr();$('today').textContent=new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit',weekday:'short'});
+$('h_date').value=todayStr();
 renderAll();
 </script>
 </body>
