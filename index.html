@@ -45,6 +45,7 @@
   .topbar h1{font-size:16px;font-weight:650}
   .date-pill{font-size:12px;color:var(--muted);background:#eef3f8;border-radius:20px;padding:5px 12px}
   .spacer{flex:1}
+  .hide{display:none}
   .avatar{width:34px;height:34px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
   .content{padding:24px;overflow:auto}
   .view{display:none}.view.active{display:block;animation:fade .25s ease}
@@ -103,6 +104,31 @@
   .carry-row:first-of-type{border-top:none}
   .carry-row .d{font-size:11px;color:#a35d09;background:#fdeccc;border-radius:6px;padding:2px 7px;font-weight:600;white-space:nowrap}
   .carry-row .tx{flex:1}
+  /* 日历：一周条 + 月历 */
+  .cal-bar{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+  .week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;flex:1}
+  .wd{border:1px solid var(--line);border-radius:10px;padding:5px 2px;text-align:center;cursor:pointer;background:#fff;transition:.15s}
+  .wd:hover{border-color:#0d9488}
+  .wd .w{font-size:10.5px;color:var(--muted)}
+  .wd .n{display:block;font-size:15px;font-weight:800;color:var(--ink);line-height:1.3}
+  .wd .m{display:block;font-size:10px;height:13px;color:#0d9488;font-weight:700}
+  .wd.today{border-color:#0d9488;background:var(--teal-soft)}
+  .wd.sel{background:linear-gradient(135deg,#0ea5a4,#2563eb);border-color:transparent;box-shadow:0 6px 14px rgba(13,148,136,.28)}
+  .wd.sel .w,.wd.sel .n,.wd.sel .m{color:#fff}
+  .month-box{border:1px solid var(--line);border-radius:12px;padding:10px 10px 12px;background:#fff;margin-bottom:12px}
+  .month-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12.5px;font-weight:800;color:#0f766e}
+  .month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .mg-h{text-align:center;font-size:10.5px;color:var(--muted);padding:2px 0}
+  .mc{border-radius:8px;padding:3px 0;text-align:center;cursor:pointer;font-size:12px;color:var(--ink)}
+  .mc:hover{background:#eef6f9}
+  .mc .m{display:block;font-size:9.5px;height:12px;color:#0d9488;font-weight:700}
+  .mc.out{color:#bccbd6}
+  .mc.today{background:var(--teal-soft);font-weight:800}
+  .mc.sel{background:linear-gradient(135deg,#0ea5a4,#2563eb);color:#fff}
+  .mc.sel .m{color:#fff}
+  .carry-bar{display:flex;align-items:center;gap:10px;background:#fff8ec;border:1px dashed #efc078;border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:12.5px;color:#8a5316;flex-wrap:wrap}
+  .done-toggle{margin-top:8px;font-size:12px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;background:#f6f9fb;border-radius:8px;padding:5px 10px;border:none;font-family:inherit}
+  .done-toggle:hover{color:#0d9488}
   .guide b.t{display:flex;align-items:center;gap:7px;font-size:13px;color:#123c4f;margin-bottom:8px}
   .guide ul{margin:0;padding-left:18px}
   .guide li{font-size:12.5px;color:#3f5b6d;line-height:1.75;margin-bottom:2px}
@@ -277,9 +303,11 @@
       <div class="guide">
         <b class="t">📜 这个板块能做什么</b>
         <ul>
-          <li><b>每日 Todo 是核心，按天走</b>：每条奏折都带日期，打开看到的就是<b>今天</b>的；做完打勾，勾上盖「已批」。</li>
-          <li><b>昨天没批完的不会赖在今天</b>：它们会掉进上面那块黄色的「往日未批」，你可以点「挪到今天」单条搬，或「全部挪到今天」一次搬完——要不要接着批，你自己决定。</li>
-          <li><b>可以提前拟</b>：表单里把日期改成明天 / 后天，就是「预约」的奏折，到那天会自动出现在今日列表里。</li>
+          <li><b>每天一页，翻日历</b>：上面那条是<b>一周条</b>（点「🐱 月」展开整月）。点哪天就看哪天的奏折——<b>昨天的不会赖在今天</b>，它还在 9 月 28 日那一页上，点回去就能看到。</li>
+          <li><b>排序</b>：填了时间的按时间从早到晚排；<b>没填时间的排最后</b>（时间格子空着就行），适合"今天想起来才做的事"。</li>
+          <li><b>顺延全手动</b>：昨天没批完的不会自动跑过来。顶部会提醒你「还有 N 道旧奏折没批」，点「全部挪到今天」一次搬完，或「逐条处理」挑着搬——不想搬就 × 掉，这事就算了。</li>
+          <li><b>批完的会收起来</b>：打勾后折进下面「已批 N 道 🐾」，列表只留没干的。日历上：🐾 数字 = 那天欠几道，✓ = 已清账。</li>
+          <li><b>可以提前拟</b>：翻到明天的日期，直接写上奏，它就安安静静待在那天等你。</li>
           <li><b>四个数看全局</b>：待批奏折 / 在跟热点 / 加热记录 / 待跟进协作——一眼知道今天压着什么。</li>
           <li><b>热点速览</b>：自动同步情报处的热点，不用切换也能扫一眼。</li>
           <li><b>加热池看板</b>：手动把候选单集在「待初筛 → 高潜 → 已加热 → 已推送放」四列里挪，当成你的筛选台。</li>
@@ -288,15 +316,26 @@
       </div>
 
       <div class="card" style="border-color:#cdeae5">
-        <h3>📜 今日奏折 · 每日 Todo <span class="spacer"></span><span class="pill p-amber" id="todoLeft">0 待批</span></h3>
+        <h3>📜 <span id="todoDayLabel">今日</span>奏折 · 每日 Todo <span class="spacer"></span><span class="pill p-amber" id="todoLeft">0 待批</span></h3>
+
+        <div class="cal-bar">
+          <button class="icon-btn" onclick="weekMove(-7)" title="上一周">‹</button>
+          <div class="week-strip" id="weekStrip"></div>
+          <button class="icon-btn" onclick="weekMove(7)" title="下一周">›</button>
+          <button class="btn sm" onclick="toggleMonth()" title="展开整月">🐱 月</button>
+          <button class="btn sm" onclick="goToday()">回今天</button>
+        </div>
+        <div id="monthBox" class="month-box hide"></div>
+        <div id="carryBar"></div>
+
         <div class="form-row">
           <input id="t_date" type="date" class="w-sm" />
-          <input id="t_time" class="w-sm" placeholder="时间 09:20" />
+          <input id="t_time" type="time" class="w-sm" title="不填就排在最后" />
           <input id="t_text" placeholder="今天要落的一笔，如：回访 @声东击西 反馈是否采纳" />
           <button class="btn gold" onclick="addTodo()">上奏</button>
         </div>
-        <div id="todoOther"></div>
         <div id="todoList"></div>
+        <div id="todoDoneBox"></div>
       </div>
 
       <div class="grid g-4" style="margin-top:16px">
@@ -687,7 +726,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const KEY='zym_data_v3';
-const VER='v1.3 · 09-29';
+const VER='v1.4 · 09-29';
 const uid=()=>Date.now()+Math.random().toString(36).slice(2,6);
 const esc=s=>(s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('zh-CN');
@@ -731,36 +770,96 @@ const SRCCOLOR={'书籍':'#1d4ed8','公众号':'#0d9488','小红书':'#2563eb','
 function openModal(html){$('modalBody').innerHTML=html;$('modal').classList.add('on');}
 function closeModal(){$('modal').classList.remove('on');}
 
-/* ---------- 批奏折 / Todo ---------- */
+/* ---------- 批奏折 / Todo（按天 · 日历 · 手动顺延） ---------- */
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function toDate(s){const p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
+function fmtD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function addDays(s,n){const d=toDate(s);d.setDate(d.getDate()+n);return fmtD(d);}
+function dowIdx(s){return (toDate(s).getDay()+6)%7;}            /* 0=周一 */
+function weekStart(s){return addDays(s,-dowIdx(s));}             /* 该周的周一 */
+const WD=['一','二','三','四','五','六','日'];
+function dayStat(ds){const ts=D.todos.filter(t=>(t.date||'')===ds);return{un:ts.filter(t=>!t.done).length,done:ts.filter(t=>t.done).length};}
+function dayMark(ds){const s=dayStat(ds);if(s.un>0)return'🐾'+s.un;if(s.done>0)return'✓';return'';}
+function dayLabel(ds){const t=todayStr();if(ds===t)return'今日';if(ds===addDays(t,1))return'明日';if(ds===addDays(t,-1))return'昨日';
+  const p=ds.split('-');return p[1].replace(/^0/,'')+'月'+p[2].replace(/^0/,'')+'日';}
+let selDate=todayStr(),monthCursor=todayStr(),showMonth=false,showDone=false,carryOpen=false;
+function setSel(ds){selDate=ds;monthCursor=ds;$('t_date').value=ds;showDone=false;renderTodos();}
+function goToday(){setSel(todayStr());}
+function weekMove(n){selDate=addDays(selDate,n);monthCursor=selDate;$('t_date').value=selDate;renderTodos();}
+function monthMove(n){const d=toDate(monthCursor);d.setDate(1);d.setMonth(d.getMonth()+n);monthCursor=fmtD(d);renderTodos();}
+function toggleMonth(){showMonth=!showMonth;renderTodos();}
+function toggleDone(){showDone=!showDone;renderTodos();}
+function renderWeekStrip(){
+  const t=todayStr(),ws=weekStart(selDate);
+  $('weekStrip').innerHTML=[0,1,2,3,4,5,6].map(i=>{const ds=addDays(ws,i);const s=dayStat(ds);
+    return '<div class="wd'+(ds===t?' today':'')+(ds===selDate?' sel':'')+'" onclick="setSel(\''+ds+'\')">'+
+      '<span class="w">'+WD[i]+'</span><span class="n">'+Number(ds.split('-')[2])+'</span>'+
+      '<span class="m">'+(ds===t&&s.un===0&&s.done===0?'🐱':dayMark(ds))+'</span></div>';}).join('');
+}
+function renderMonth(){
+  const t=todayStr(),d=toDate(monthCursor),y=d.getFullYear(),mo=d.getMonth();
+  const first=fmtD(new Date(y,mo,1)),start=weekStart(first);
+  const head='<div class="month-head">🐱 '+y+' 年 '+(mo+1)+' 月'+
+    '<span class="spacer"></span><button class="icon-btn" onclick="monthMove(-1)">‹</button>'+
+    '<button class="icon-btn" onclick="monthMove(1)">›</button></div>';
+  const grid='<div class="month-grid">'+WD.map(w=>'<div class="mg-h">'+w+'</div>').join('')+
+    [0,1,2,3,4,5].map(w=>[0,1,2,3,4,5,6].map(i=>{const ds=addDays(start,w*7+i);const dd=toDate(ds);
+      const out=dd.getMonth()!==mo;const s=dayStat(ds);
+      return '<div class="mc'+(out?' out':'')+(ds===t?' today':'')+(ds===selDate?' sel':'')+'" onclick="setSel(\''+ds+'\')">'+
+        dd.getDate()+'<span class="m">'+(out?'':dayMark(ds))+'</span></div>';}).join('')).join('')+'</div>';
+  $('monthBox').innerHTML=head+grid;
+}
 function renderTodos(){
-  const today=todayStr();
-  const todayList=D.todos.filter(t=>(t.date||'')===today);
-  const other=D.todos.filter(t=>!t.done&&(t.date||'')!==today).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  $('todoOther').innerHTML=other.length?
-    '<div class="carry-box"><div class="ch">📌 往日未批 / 提前拟好 · '+other.length+' 道'+
-      '<span class="spacer"></span><button class="btn sm" onclick="carryAll()">全部挪到今天</button></div>'+
-    other.map(t=>'<div class="carry-row"><span class="d">'+((t.date||'')<today?'顺延':'预约')+' '+esc(t.date||'')+'</span>'+
+  const today=todayStr(),sel=selDate;
+  $('monthBox').classList.toggle('hide',!showMonth);
+  renderWeekStrip();if(showMonth)renderMonth();
+  $('todoDayLabel').textContent=dayLabel(sel);
+  /* 顺延提醒：只看「今天之前」且不是当前查看日的未批奏折 */
+  const past=D.todos.filter(t=>!t.done&&(t.date||'')<today&&(t.date||'')!==sel).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  $('carryBar').innerHTML=past.length?
+    '<div class="carry-bar">🐱 还有 <b>'+past.length+'</b> 道旧奏折没批（最早 '+esc(past[0].date)+'）'+
+      '<span class="spacer"></span>'+
+      '<button class="btn sm" onclick="carryAll()">全部挪到今天</button>'+
+      '<button class="btn sm" onclick="toggleCarry()">'+(carryOpen?'收起 ▴':'逐条处理 ▾')+'</button></div>'+
+    (carryOpen?'<div class="carry-box">'+past.map(t=>'<div class="carry-row"><span class="d">'+esc(t.date)+'</span>'+
       '<span class="tx">'+esc(t.text)+'</span>'+
       '<button class="btn sm" onclick="todoToToday(\''+t.id+'\')">挪到今天</button>'+
-      '<button class="icon-btn" onclick="delTodo(\''+t.id+'\')">×</button></div>').join('')+'</div>':'';
-  $('todoList').innerHTML=todayList.map(t=>
-    '<div class="todo'+(t.done?' done':'')+'">'+
-    '<input type="checkbox" class="chk" '+(t.done?'checked':'')+' onchange="toggleTodo(\''+t.id+'\')">'+
-    '<div class="ttime">'+esc(t.time||'')+'</div>'+
-    '<div class="ttext">'+esc(t.text)+(t.done?' <span class="stamp">已批</span>':'')+'</div>'+
-    '<button class="icon-btn" onclick="delTodo(\''+t.id+'\')">×</button></div>').join('')||'<div class="empty">今日无事，可退朝。</div>';
-  const left=todayList.filter(t=>!t.done).length;
-  $('todoLeft').textContent=left+' 待批';$('nbTodo').textContent=left;$('sTodo').textContent=left;
-  const tag=$('tagTodo');tag.textContent=left+other.length;tag.classList.toggle('hide',(left+other.length)===0);
+      '<button class="icon-btn" onclick="delTodo(\''+t.id+'\')">×</button></div>').join('')+'</div>':'')
+    :'';
+  /* 当天列表：有时间的按时间升序，没填时间的排最后 */
+  const all=D.todos.filter(t=>(t.date||'')===sel).slice().sort((a,b)=>{
+    const at=a.time||'',bt=b.time||'';
+    if(at===bt)return 0; if(!at)return 1; if(!bt)return -1; return at<bt?-1:1;});
+  const undone=all.filter(t=>!t.done),done=all.filter(t=>t.done);
+  $('todoList').innerHTML=undone.map(t=>
+    '<div class="todo">'+
+    '<input type="checkbox" class="chk" onchange="toggleTodo(\''+t.id+'\')">'+
+    '<div class="ttime">'+(t.time?esc(t.time):'<span style="opacity:.4">—</span>')+'</div>'+
+    '<div class="ttext">'+esc(t.text)+'</div>'+
+    '<button class="icon-btn" onclick="delTodo(\''+t.id+'\')">×</button></div>').join('')
+    ||'<div class="empty">'+dayLabel(sel)+'无事，咪已躺平 🐱</div>';
+  $('todoDoneBox').innerHTML=done.length?
+    '<button class="done-toggle" onclick="toggleDone()">'+(showDone?'▴':'▾')+' 已批 '+done.length+' 道 🐾</button>'+
+    (showDone?'<div style="margin-top:8px">'+done.map(t=>
+      '<div class="todo done"><input type="checkbox" class="chk" checked onchange="toggleTodo(\''+t.id+'\')">'+
+      '<div class="ttime">'+(t.time?esc(t.time):'<span style="opacity:.4">—</span>')+'</div>'+
+      '<div class="ttext">'+esc(t.text)+' <span class="stamp">已批</span></div>'+
+      '<button class="icon-btn" onclick="delTodo(\''+t.id+'\')">×</button></div>').join('')+'</div>':'')
+    :'';
+  const left=undone.length;
+  $('todoLeft').textContent=left+' 待批';$('nbTodo').textContent=dayStat(today).un;$('sTodo').textContent=dayStat(today).un;
+  const tag=$('tagTodo');tag.textContent=dayStat(today).un+past.length;tag.classList.toggle('hide',(dayStat(today).un+past.length)===0);
 }
 function addTodo(){const text=v('t_text');if(!text)return;
-  D.todos.push({id:uid(),date:v('t_date')||todayStr(),time:v('t_time'),text,done:false});
+  D.todos.push({id:uid(),date:v('t_date')||selDate,time:v('t_time'),text,done:false});
   $('t_time').value='';$('t_text').value='';save();renderTodos();}
 function toggleTodo(id){const t=D.todos.find(x=>x.id==id);if(t){t.done=!t.done;save();renderTodos();}}
 function delTodo(id){D.todos=D.todos.filter(x=>x.id!=id);save();renderTodos();}
 function todoToToday(id){const t=D.todos.find(x=>x.id==id);if(t){t.date=todayStr();save();renderTodos();}}
-function carryAll(){const today=todayStr();let n=0;D.todos.forEach(t=>{if(!t.done&&(t.date||'')!==today){t.date=today;n++;}});if(n){save();renderTodos();} }
+function toggleCarry(){carryOpen=!carryOpen;renderTodos();}
+function carryAll(){const today=todayStr();let n=0;
+  D.todos.forEach(t=>{if(!t.done&&(t.date||'')<today){t.date=today;n++;}});
+  if(n){carryOpen=false;save();renderTodos();}}
 
 /* ---------- 天津站情报处：热点档案 ---------- */
 function renderHotspots(){
@@ -1218,7 +1317,7 @@ document.querySelectorAll('.nav-item').forEach(el=>{
     document.querySelector('.content').scrollTop=0;
   });
 });
-$('verTag').textContent=VER;$('t_date').value=todayStr();$('today').textContent=new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit',weekday:'short'});
+$('verTag').textContent=VER;$('t_date').value=selDate;$('today').textContent=new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit',weekday:'short'});
 $('h_date').value=todayStr();
 renderAll();
 </script>
